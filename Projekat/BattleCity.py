@@ -54,9 +54,8 @@ FRAME_TIME_MS           = 16  # ms/frame
 playerPositions = [(0,0),(0,0)]
 
 maps = []
-f = open('maps.txt', 'r')
+f = open('maps0.txt', 'r')
 maps = [[int(num) for num in line.split(',')] for line in f]
-print(maps)
 
 class Player(QGraphicsPixmapItem):
     def __init__(self, image, parent = None):
@@ -64,7 +63,7 @@ class Player(QGraphicsPixmapItem):
         self.setPixmap(QPixmap(image))
         self.image = "Image/tankTop"
         self.image2 = "Image/tank2Top"
-
+        self.lifes = 3
     def game_update(self, keys_pressed):
         dx = 0
         dy = 0
@@ -79,7 +78,7 @@ class Player(QGraphicsPixmapItem):
                 dx -= PLAYER_SPEED
             self.setimage("Image/tankLeft")
         elif Qt.Key_Right in keys_pressed:
-            if self.x() >= 960:
+            if self.x() >= 941:
                 dx -= 0
             else:
                 dx += PLAYER_SPEED
@@ -110,7 +109,7 @@ class Player(QGraphicsPixmapItem):
                 dx -= PLAYER_SPEED
             self.setimage2("Image/tank2Left")
         elif Qt.Key_D in keys_pressed:
-            if self.x() >= 960:
+            if self.x() >= 942:
                 dx -= 0
             else:
                 dx += PLAYER_SPEED
@@ -264,10 +263,10 @@ class Scene(QGraphicsScene):
         self.timer.start(FRAME_TIME_MS, self)
 
         bg = QGraphicsRectItem()
-        bg.setRect(-1,-1,1010+3,SCREEN_HEIGHT+2)
+        bg.setRect(-1,-1,992,SCREEN_HEIGHT)
         bg.setBrush(QBrush(Qt.black))
         self.addItem(bg)
-
+        self.gameLevel = 1
 
 
         row = 0
@@ -302,7 +301,56 @@ class Scene(QGraphicsScene):
         self.addItem(self.player1)
         self.addItem(self.player2)
 
+        #Stat label
+        self.label = QGraphicsRectItem()
+        self.label.setRect(992,0,SCREEN_WIDTH, SCREEN_HEIGHT)
+        self.label.setBrush(QBrush(Qt.gray))
+        self.addItem(self.label)
 
+        #Stats
+        self.p1 = QGraphicsPixmapItem()
+        self.p1.setPos(1020, 50)
+        self.p1.setPixmap(QPixmap("Image/P1"))
+        self.addItem(self.p1)
+        self.player1Lifes = QGraphicsPixmapItem()
+        self.player1Lifes.setPos(1070,50)
+        if self.player1.lifes == 3:
+            self.player1Lifes.setPixmap(QPixmap("Image/3lifes"))
+        elif self.player1.lifes == 2:
+            self.player1Lifes.setPixmap(QPixmap("Image/2lifes"))
+        elif self.player1.lifes == 1:
+            self.player1Lifes.setPixmap(QPixmap("Image/1lif"))
+        self.addItem(self.player1Lifes)
+
+        self.p2 = QGraphicsPixmapItem()
+        self.p2.setPos(1020, 150)
+        self.p2.setPixmap(QPixmap("Image/P2"))
+        self.addItem(self.p2)
+        self.player2Lifes = QGraphicsPixmapItem()
+        self.player2Lifes.setPos(1070, 150)
+        if self.player2.lifes == 3:
+            self.player2Lifes.setPixmap(QPixmap("Image/3lifes"))
+        elif self.player2.lifes == 2:
+            self.player2Lifes.setPixmap(QPixmap("Image/2lifes"))
+        elif self.player2.lifes == 1:
+            self.player2Lifes.setPixmap(QPixmap("Image/1lif"))
+        self.addItem(self.player2Lifes)
+
+        self.levelFlag = QGraphicsPixmapItem()
+        self.levelFlag.setPos(1020, 750)
+        self.levelFlag.setPixmap(QPixmap("Image/levelFlag"))
+        self.addItem(self.levelFlag)
+
+        self.levelNumber = QGraphicsSimpleTextItem()
+        self.levelNumber.setText(str(self.gameLevel))
+        self.levelNumber.setPos(1040,770)
+        self.levelNumber.setBrush(QBrush(Qt.black))
+        self.addItem(self.levelNumber)
+
+        self.enemyNumberPic = QGraphicsPixmapItem()
+        self.enemyNumberPic.setPos(1020, 400)
+        self.enemyNumberPic.setPixmap(QPixmap("Image/enemyTankTop2"))
+        self.addItem(self.enemyNumberPic)
 
         self.view = QGraphicsView(self)
         self.view.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
