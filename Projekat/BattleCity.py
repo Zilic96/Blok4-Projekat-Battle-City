@@ -297,6 +297,15 @@ class Brick(QGraphicsPixmapItem):
         self.TopCor = 0
         self.BotCor = 0
 
+class Eagle(QGraphicsPixmapItem):
+    def __init__(self, image, parent = None):
+        QGraphicsPixmapItem.__init__(self,parent)
+        self.setPixmap(QPixmap(image))
+        self.LeftCor = 0
+        self.RightCor = 0
+        self.TopCor = 0
+        self.BotCor = 0
+
 
 class Scene(QGraphicsScene):
     def __init__(self, parent = None):
@@ -333,6 +342,18 @@ class Scene(QGraphicsScene):
 
                     niz.append(brick)
 
+                elif(j==2):
+                    eagle = Eagle("Image/eagle")
+                    eagle.setPos(col * 32, row * 32)
+                    self.addItem(eagle)
+                    self.update()
+                    eagle.LeftCor = col * 32
+                    eagle.RightCor = col * 32 + 96
+                    eagle.TopCor = row * 32
+                    eagle.BotCor = row * 32 + 64
+
+                    niz.append(eagle)
+
                 col = col + 1
             row = row + 1
 
@@ -343,14 +364,15 @@ class Scene(QGraphicsScene):
         self.player2.setPos((SCREEN_WIDTH - self.player2.pixmap().width()) / 3*2,
                             (SCREEN_HEIGHT - self.player2.pixmap().height()) / 1)
 
-        self.bullets = [Bullet(PLAYER_BULLET_X_OFFSETS,PLAYER_BULLET_Y)]
-        for b in self.bullets:
-            b.setPos(SCREEN_WIDTH,SCREEN_HEIGHT)
-            self.addItem(b)
-        self.bullets2 = [Bullet(PLAYER_BULLET_X_OFFSETS, PLAYER_BULLET_Y)]
-        for b2 in self.bullets2:
-            b2.setPos(SCREEN_WIDTH, SCREEN_HEIGHT)
-            self.addItem(b2)
+        self.bullet = Bullet(PLAYER_BULLET_X_OFFSETS,PLAYER_BULLET_Y)
+
+        self.bullet.setPos(SCREEN_WIDTH,SCREEN_HEIGHT)
+        self.addItem(self.bullet)
+
+        self.bullet2 = Bullet(PLAYER_BULLET_X_OFFSETS, PLAYER_BULLET_Y)
+        self.bullet2.setPos(SCREEN_WIDTH, SCREEN_HEIGHT)
+        self.addItem(self.bullet2)
+
         self.addItem(self.player1)
         self.addItem(self.player2)
 
@@ -402,7 +424,7 @@ class Scene(QGraphicsScene):
 
         self.enemyNumberPic = QGraphicsPixmapItem()
         self.enemyNumberPic.setPos(1020, 400)
-        self.enemyNumberPic.setPixmap(QPixmap("Image/enemyTankTop2"))
+        self.enemyNumberPic.setPixmap(QPixmap("Image/enemyTankTop"))
         self.addItem(self.enemyNumberPic)
 
         self.view = QGraphicsView(self)
@@ -425,11 +447,9 @@ class Scene(QGraphicsScene):
 
     def game_update(self):
         self.player1.game_update(self.keys_pressed)
-        for b in self.bullets:
-            b.game_update(self.keys_pressed, self.player1)
+        self.bullet.game_update(self.keys_pressed, self.player1)
         self.player2.game_update2(self.keys_pressed)
-        for b2 in self.bullets2:
-            b2.game_update2(self.keys_pressed, self.player2)
+        self.bullet2.game_update2(self.keys_pressed, self.player2)
 
 
 if __name__ == '__main__':
