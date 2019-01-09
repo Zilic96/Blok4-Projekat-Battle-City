@@ -56,6 +56,7 @@ playerPositions = [(0,0),(0,0)]
 maps = []
 f = open('maps0.txt', 'r')
 maps = [[int(num) for num in line.split(',')] for line in f]
+niz = []
 
 class Player(QGraphicsPixmapItem):
     def __init__(self, image, parent = None):
@@ -67,34 +68,56 @@ class Player(QGraphicsPixmapItem):
     def game_update(self, keys_pressed):
         dx = 0
         dy = 0
+        canMove = True
         if Qt.Key_Left in keys_pressed:
-            """print("PLAYER 2 :")
-            print(playerPositions[1][0])
-            print("PLAYER 1 :")
-            print(self.x()-25)"""
-            if  self.x() <= 0 :
+            for b in niz:
+                if (self.x() >= b.LeftCor and self.x() <= b.RightCor+3):
+                    if ((self.y() >= b.TopCor and self.y() <= b.BotCor) or (self.y() + 50 >= b.TopCor and self.y() + 50 <= b.BotCor) or (self.y() < b.TopCor and self.y() + 50 > b.BotCor)):
+                        dx -= 0
+                        canMove = False
+
+            if self.x() <= 0:
                 dx -= 0
-            else:
+            elif (canMove):
                 dx -= PLAYER_SPEED
             self.setimage("Image/tankLeft")
+
         elif Qt.Key_Right in keys_pressed:
+            for b in niz:
+                if (self.x() + 50 >= b.LeftCor-3 and self.x()+ 50 <= b.RightCor):
+                    if ((self.y() >= b.TopCor and self.y() <= b.BotCor) or (self.y() + 50 >= b.TopCor and self.y() + 50 <= b.BotCor) or (self.y() < b.TopCor and self.y() + 50 > b.BotCor)):
+                        dx -= 0
+                        canMove = False
+
             if self.x() >= 941:
                 dx -= 0
-            else:
+            elif(canMove):
                 dx += PLAYER_SPEED
             self.setimage("Image/tankRight")
+
         elif Qt.Key_Up in keys_pressed:
+            for b in niz:
+                if (self.y() <= b.BotCor+3 and self.y() >= b.TopCor):
+                    if ((self.x() >= b.LeftCor and self.x() <= b.RightCor) or ( self.x() + 50 >= b.LeftCor and self.x() + 50 <= b.RightCor) or (self.x() < b.LeftCor and self.x() + 50 > b.RightCor)):
+                        dy -= 0
+                        canMove = False
+
             if self.y() <= 0:
                 dy -= 0
-            else:
+            elif (canMove):
                 dy -= PLAYER_SPEED
             self.setimage("Image/tankTop")
+
         elif Qt.Key_Down in keys_pressed:
-            if self.y() <= 746:
+            for b in niz:
+                if (self.y() + 50 <= b.BotCor and self.y() + 50 >= b.TopCor-3):
+                    if ((self.x() >= b.LeftCor and self.x() <= b.RightCor) or ( self.x() + 50 >= b.LeftCor and self.x() + 50 <= b.RightCor) or (self.x() < b.LeftCor and self.x() + 50 > b.RightCor)):
+                        dy -= 0
+                        canMove = False
+            if self.y() >= 746:
                 dy -= 0
-            else:
-                dy -= PLAYER_SPEED
-            dy += PLAYER_SPEED
+            elif(canMove):
+                dy += PLAYER_SPEED
             self.setimage("Image/tankBottom")
         playerPositions[0] = (self.x()+dx, self.y()+dy)
         self.setPos(self.x()+dx, self.y()+dy)
@@ -102,28 +125,49 @@ class Player(QGraphicsPixmapItem):
     def game_update2(self, keys_pressed):
         dx = 0
         dy = 0
+        canMove = True
         if Qt.Key_A in keys_pressed:
+            for b in niz:
+                if (self.x() >= b.LeftCor and self.x() <= b.RightCor+3):
+                    if ((self.y() >= b.TopCor and self.y() <= b.BotCor) or (self.y() + 50 >= b.TopCor and self.y() + 50 <= b.BotCor) or (self.y() < b.TopCor and self.y() + 50 > b.BotCor)):
+                        dx -= 0
+                        canMove = False
             if self.x() <= 0 :
                 dx -= 0
-            else:
+            elif(canMove):
                 dx -= PLAYER_SPEED
             self.setimage2("Image/tank2Left")
         elif Qt.Key_D in keys_pressed:
+            for b in niz:
+                if (self.x() + 50 >= b.LeftCor-3 and self.x()+ 50 <= b.RightCor):
+                    if ((self.y() >= b.TopCor and self.y() <= b.BotCor) or (self.y() + 50 >= b.TopCor and self.y() + 50 <= b.BotCor) or (self.y() < b.TopCor and self.y() + 50 > b.BotCor)):
+                        dx -= 0
+                        canMove = False
             if self.x() >= 942:
                 dx -= 0
-            else:
+            elif(canMove):
                 dx += PLAYER_SPEED
             self.setimage2("Image/tank2Right")
         elif Qt.Key_W in keys_pressed:
+            for b in niz:
+                if (self.y() <= b.BotCor+3 and self.y() >= b.TopCor):
+                    if ((self.x() >= b.LeftCor and self.x() <= b.RightCor) or ( self.x() + 50 >= b.LeftCor and self.x() + 50 <= b.RightCor) or (self.x() < b.LeftCor and self.x() + 50 > b.RightCor)):
+                        dy -= 0
+                        canMove = False
             if self.y() <= 0:
                 dy -= 0
-            else:
+            elif(canMove):
                 dy -= PLAYER_SPEED
             self.setimage2("Image/tank2Top")
         elif Qt.Key_S in keys_pressed:
+            for b in niz:
+                if (self.y() + 50 <= b.BotCor and self.y() + 50 >= b.TopCor-3):
+                    if ((self.x() >= b.LeftCor and self.x() <= b.RightCor) or ( self.x() + 50 >= b.LeftCor and self.x() + 50 <= b.RightCor) or (self.x() < b.LeftCor and self.x() + 50 > b.RightCor)):
+                        dy -= 0
+                        canMove = False
             if self.y() >= 746:
                 dy -= 0
-            else:
+            elif(canMove):
                 dy += PLAYER_SPEED
             self.setimage2("Image/tank2Bottom")
         playerPositions[1] = (self.x() + dx, self.y() + dy)
@@ -248,7 +292,10 @@ class Brick(QGraphicsPixmapItem):
     def __init__(self, image, parent = None):
         QGraphicsPixmapItem.__init__(self,parent)
         self.setPixmap(QPixmap(image))
-
+        self.LeftCor = 0
+        self.RightCor = 0
+        self.TopCor = 0
+        self.BotCor = 0
 
 
 class Scene(QGraphicsScene):
@@ -275,11 +322,17 @@ class Scene(QGraphicsScene):
             col = 0
             for j in i:
                 if(j==1):
-                    self.brick = Brick("Image/brick")
-                    self.brick.setPos(col * 32, row * 32)
-                    self.addItem(self.brick)
+                    brick = Brick("Image/brick")
+                    brick.setPos(col * 32, row * 32)
+                    self.addItem(brick)
                     self.update()
-                    print(j)
+                    brick.LeftCor = col * 32
+                    brick.RightCor = col * 32 + 32
+                    brick.TopCor = row * 32
+                    brick.BotCor = row * 32 + 32
+
+                    niz.append(brick)
+
                 col = col + 1
             row = row + 1
 
