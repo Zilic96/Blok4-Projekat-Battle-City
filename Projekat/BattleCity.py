@@ -2,6 +2,7 @@ import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
+from random import *
 
 
 """class App(QMainWindow):
@@ -54,8 +55,8 @@ FRAME_TIME_MS           = 16  # ms/frame
 playerPositions = [(0,0),(0,0)]
 
 maps = []
-f = open('maps0.txt', 'r')
-maps = [[int(num) for num in line.split(',')] for line in f]
+"""f = open('maps0.txt', 'r')
+maps = [[int(num) for num in line.split(',')] for line in f]"""
 niz = []
 
 class Player(QGraphicsPixmapItem):
@@ -171,7 +172,6 @@ class Player(QGraphicsPixmapItem):
                 dy += PLAYER_SPEED
             self.setimage2("Image/tank2Bottom")
         playerPositions[1] = (self.x() + dx, self.y() + dy)
-        #print(self.playerPositions[1])
         self.setPos(self.x()+dx, self.y()+dy)
 
     def setimage(self, image):
@@ -214,7 +214,6 @@ class Bullet(QGraphicsPixmapItem):
     def game_update(self, keys_pressed, player):
         if not self.active:
             if Qt.Key_Space in keys_pressed:
-                #print(player.image)
                 if player.getimage() == "Image/tankTop":
                     self.setBulletImage("Image/bulet")
                     self.bulletDirection = 0
@@ -236,7 +235,6 @@ class Bullet(QGraphicsPixmapItem):
                 self.frames = BULLET_FRAMES
 
         else:
-            #print(self.bulletDirection)
             if self.bulletDirection == 0:
                 self.setPos(self.x(),self.y()-BULLET_SPEED)
             elif self.bulletDirection == 2:
@@ -253,7 +251,6 @@ class Bullet(QGraphicsPixmapItem):
     def game_update2(self, keys_pressed, player):
         if not self.active2:
             if Qt.Key_Control in keys_pressed:
-                print(player.getimage2())
                 if player.getimage2() == "Image/tank2Top":
                     self.setBulletImage2("Image/bulet")
                     self.bulletDirection2 = 0
@@ -296,6 +293,7 @@ class Brick(QGraphicsPixmapItem):
         self.RightCor = 0
         self.TopCor = 0
         self.BotCor = 0
+        self.isEagel = False
 
 class Eagle(QGraphicsPixmapItem):
     def __init__(self, image, parent = None):
@@ -305,6 +303,7 @@ class Eagle(QGraphicsPixmapItem):
         self.RightCor = 0
         self.TopCor = 0
         self.BotCor = 0
+        self.isEagel = True
 
 
 class Scene(QGraphicsScene):
@@ -318,12 +317,14 @@ class Scene(QGraphicsScene):
         self.timer = QBasicTimer()
         self.timer.start(FRAME_TIME_MS, self)
 
-        bg = QGraphicsRectItem()
-        bg.setRect(-1,-1,992,SCREEN_HEIGHT)
-        bg.setBrush(QBrush(Qt.black))
-        self.addItem(bg)
-        self.gameLevel = 1
-
+        self.bg = QGraphicsRectItem()
+        self.bg.setRect(-1,-1,992,SCREEN_HEIGHT)
+        self.bg.setBrush(QBrush(Qt.black))
+        self.addItem(self.bg)
+        self.gameLevel = randint(0,2)
+        self.gamelevelString = "maps"+str(self.gameLevel)+".txt"
+        f = open(self.gamelevelString, 'r')
+        maps = [[int(num) for num in line.split(',')] for line in f]
 
         row = 0
         col = 0
@@ -366,7 +367,7 @@ class Scene(QGraphicsScene):
 
         self.bullet = Bullet(PLAYER_BULLET_X_OFFSETS,PLAYER_BULLET_Y)
 
-        self.bullet.setPos(SCREEN_WIDTH,SCREEN_HEIGHT)
+        self.bullet.setPos(0,0)
         self.addItem(self.bullet)
 
         self.bullet2 = Bullet(PLAYER_BULLET_X_OFFSETS, PLAYER_BULLET_Y)
@@ -446,11 +447,75 @@ class Scene(QGraphicsScene):
         self.update()
 
     def game_update(self):
+        if (self.bullet.x() + 8 >= 985):
+            self.removeItem(self.bullet)
+            self.bullet.active = False
+        elif (self.bullet.x() < 0):
+            self.removeItem(self.bullet)
+            self.bullet.active = False
+        elif (self.bullet.y() < 0):
+            self.removeItem(self.bullet)
+            self.bullet.active = False
+        elif (self.bullet.y() >= 800):
+            self.removeItem(self.bullet)
+            self.bullet.active = False
+        for brick in niz:
+            #if()
+            if(self.bullet.x() >= brick.LeftCor and self.bullet.x() <= brick.RightCor and self.bullet.y() >= brick.TopCor and self.bullet.y() <= brick.BotCor):
+                if(brick.isEagel is True):
+                    self.gameOver()
+
+                self.removeItem(brick)
+                niz.remove(brick)
+                self.removeItem(self.bullet)
+                self.bullet.active = False
         self.player1.game_update(self.keys_pressed)
         self.bullet.game_update(self.keys_pressed, self.player1)
+        if(self.bullet.active):
+            self.addItem(self.bullet)
+
+        if (self.bullet2.x() + 8 >= 985):
+            self.removeItem(self.bullet2)
+            self.bullet2.active2 = False
+        elif (self.bullet2.x() < 0):
+            self.removeItem(self.bullet2)
+            self.bullet2.active2 = False
+        elif (self.bullet2.y() < 0):
+            self.removeItem(self.bullet2)
+            self.bullet2.active2 = False
+        elif (self.bullet2.y() >= 800):
+            self.removeItem(self.bullet2)
+            self.bullet2.active2 = False
+        for brick in niz:
+            if (self.bullet2.x() >= brick.LeftCor and self.bullet2.x() <= brick.RightCor and self.bullet2.y() >= brick.TopCor and self.bullet2.y() <= brick.BotCor):
+                self.removeItem(brick)
+                niz.remove(brick)
+                self.removeItem(self.bullet2)
+                self.bullet2.active2 = False
+
         self.player2.game_update2(self.keys_pressed)
         self.bullet2.game_update2(self.keys_pressed, self.player2)
+        if (self.bullet2.active2):
+            self.addItem(self.bullet2)
+    def gameOver(self):
+        startGameImage = QImage("Image/GameOver.png")
+        sStartGameImage = startGameImage.scaled(QSize(1200, 800))
+        self.bgGameOver = QGraphicsPixmapItem()
+        self.bgGameOver.setPos(0, 0)
+        self.bgGameOver.setPixmap(QPixmap(sStartGameImage))
+        self.addItem(self.bgGameOver)
 
+        self.removeItem(self.bullet)
+        self.bullet.active = False
+        self.removeItem(self.bullet2)
+        self.bullet2.active2 = False
+
+        """self.button = QPushButton('New Game', self)
+        self.button.resize(200, 60)
+        self.button.move(500, 540)
+        self.button.setStyleSheet("background-color: #BD4400")
+        self.addItem(self.button)
+        self.button.clicked.connect(self.__init__())"""
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
