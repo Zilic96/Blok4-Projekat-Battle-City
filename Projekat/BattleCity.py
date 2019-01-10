@@ -1,4 +1,6 @@
 import sys
+
+import functools
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
@@ -45,16 +47,16 @@ from random import *
 SCREEN_WIDTH            = 1200
 SCREEN_HEIGHT           = 800
 PLAYER_SPEED            = 3   # pix/frame
+ENEMY_SPEED             = 1
 PLAYER_BULLET_X_OFFSETS = 23
 PLAYER_BULLET_Y         = 15
 BULLET_SPEED            = 10  # pix/frame
-BULLET_FRAMES           = 90
+BULLET_FRAMES           = 110
 FRAME_TIME_MS           = 16  # ms/frame
 playerPositions = [(0,0),(0,0)]
+enemyPositions = [(0,0)]
 
 maps = []
-"""f = open('maps0.txt', 'r')
-maps = [[int(num) for num in line.split(',')] for line in f]"""
 niz = []
 
 class Player(QGraphicsPixmapItem):
@@ -187,20 +189,103 @@ class Player(QGraphicsPixmapItem):
     def getimage2(self):
         return self.image2
 
+class Enemy(QGraphicsPixmapItem):
+    def __init__(self, image, parent = None):
+        QGraphicsPixmapItem.__init__(self,parent)
+        self.setPixmap(QPixmap(image))
+        self.rand = 3
+        self.temp = 0
+        self.isAlive = True
+
+    def gameUpdate(self):
+        self.temp = self.temp +1
+        dx = 0
+        dy = 0
+        canMove = True
+        if(self.temp > 75):
+            self.rand = randint(0,3)
+            self.temp = 0
+        if(self.rand == 0):
+            for b in niz:
+                if (self.x() >= b.LeftCor and self.x() <= b.RightCor+3):
+                    if ((self.y() >= b.TopCor and self.y() <= b.BotCor) or (self.y() + 50 >= b.TopCor and self.y() + 50 <= b.BotCor) or (self.y() < b.TopCor and self.y() + 50 > b.BotCor)):
+                        dx -= 0
+                        canMove = False
+
+            if self.x() <= 0:
+                dx -= 0
+            elif (canMove):
+                dx -= ENEMY_SPEED
+            #enemyPosition[1] = (self.x() + dx, self.y() + dy)
+            self.setimage("Image/enemyTankLeft")
+            self.setPos(self.x() + dx, self.y() + dy)
+        if (self.rand == 1):
+            for b in niz:
+                if (self.y() <= b.BotCor+3 and self.y() >= b.TopCor):
+                    if ((self.x() >= b.LeftCor and self.x() <= b.RightCor) or ( self.x() + 50 >= b.LeftCor and self.x() + 50 <= b.RightCor) or (self.x() < b.LeftCor and self.x() + 50 > b.RightCor)):
+                        dy -= 0
+                        canMove = False
+            if self.y() <= 0:
+                dy -= 0
+            elif(canMove):
+                dy -= ENEMY_SPEED
+            # enemyPosition[1] = (self.x() + dx, self.y() + dy)
+            self.setimage("Image/enemyTankTop")
+            self.setPos(self.x() + dx, self.y() + dy)
+        if (self.rand == 2):
+            for b in niz:
+                if (self.x() + 50 >= b.LeftCor-3 and self.x()+ 50 <= b.RightCor):
+                    if ((self.y() >= b.TopCor and self.y() <= b.BotCor) or (self.y() + 50 >= b.TopCor and self.y() + 50 <= b.BotCor) or (self.y() < b.TopCor and self.y() + 50 > b.BotCor)):
+                        dx -= 0
+                        canMove = False
+            if self.x() >= 942:
+                dx -= 0
+            elif(canMove):
+                dx += ENEMY_SPEED
+            # enemyPosition[1] = (self.x() + dx, self.y() + dy)
+            self.setimage("Image/enemyTankRight")
+            self.setPos(self.x() + dx, self.y() + dy)
+        if (self.rand == 3):
+            for b in niz:
+                if (self.y() + 50 <= b.BotCor and self.y() + 50 >= b.TopCor-3):
+                    if ((self.x() >= b.LeftCor and self.x() <= b.RightCor) or ( self.x() + 50 >= b.LeftCor and self.x() + 50 <= b.RightCor) or (self.x() < b.LeftCor and self.x() + 50 > b.RightCor)):
+                        dy -= 0
+                        canMove = False
+            if self.y() >= 746:
+                dy -= 0
+            elif(canMove):
+                dy += ENEMY_SPEED
+            # enemyPosition[1] = (self.x() + dx, self.y() + dy)
+            self.setimage("Image/enemyTankBottom")
+            self.setPos(self.x() + dx, self.y() + dy)
+        enemyPositions[0] = ((self.x()+dx , self.y()+dy))
+
+    def setimage(self, image):
+        self.image = image
+        self.setPixmap(QPixmap(image))
+
+    def getimage(self):
+        return self.image
+
 class Bullet(QGraphicsPixmapItem):
     def __init__(self, offset_x, offset_y, parent = None):
         QGraphicsPixmapItem.__init__(self,parent)
         self.imageBullet = "Image/bulet"
         self.imageBullet2 = "Image/bulet"
+        self.imageBullet3 = "Image/bulet"
         self.setPixmap(QPixmap(self.imageBullet))
         self.offset_x = offset_x
         self.offset_y = offset_y
         self.active = False
         self.active2 = False
+        self.active3 = False
         self.frames = 0
         self.frames2 = 0
+        self.frames3 = 0
         self.bulletDirection = 0
         self.bulletDirection2 = 0
+        self.bulletDirection3 = 0
+        self.enemyBulletFlag = False
 
     def setBulletImage(self, image):
         self.imageBullet = image
@@ -210,9 +295,14 @@ class Bullet(QGraphicsPixmapItem):
         self.imageBullet2 = image
         self.setPixmap(QPixmap(self.imageBullet2))
 
+    def setBulletImage3(self, image):
+        self.imageBullet3 = image
+        self.setPixmap(QPixmap(self.imageBullet3))
+
     def game_update(self, keys_pressed, player):
         if not self.active:
             if (Qt.Key_Space in keys_pressed and player.lifes > 0):
+                print(str(player.lifes))
                 if player.getimage() == "Image/tankTop":
                     self.setBulletImage("Image/bulet")
                     self.bulletDirection = 0
@@ -284,6 +374,45 @@ class Bullet(QGraphicsPixmapItem):
                 self.active2 = False
                 self.setPos(SCREEN_WIDTH,SCREEN_HEIGHT)
 
+    def game_update3(self, player, isGameOver):
+            if not self.active3:
+                 if (True and isGameOver is False and self.enemyBulletFlag is True and player.isAlive is True):
+                    self.enemyBulletFlag = False
+                    if player.getimage() == "Image/enemyTankTop":
+                        self.setBulletImage3("Image/bulet")
+                        self.bulletDirection3 = 0
+                        self.setPos(player.x() + self.offset_x, player.y() + self.offset_y)
+                    elif player.getimage() == "Image/enemyTankRight":
+                        self.setBulletImage3("Image/buletHorizontal")
+                        self.bulletDirection3= 1
+                        self.setPos(player.x() + self.offset_x, player.y() + self.offset_y + 9)
+                    elif player.getimage() == "Image/enemyTankBottom":
+                        self.setBulletImage3("Image/bulet")
+                        self.bulletDirection3 = 2
+                        self.setPos(player.x() + self.offset_x, player.y() + self.offset_y)
+                    elif player.getimage() == "Image/enemyTankLeft":
+                        self.setBulletImage3("Image/buletHorizontal")
+                        self.bulletDirection3 = 3
+                        self.setPos(player.x() + self.offset_x, player.y() + self.offset_y + 9)
+
+                    self.active3 = True
+                    self.frames3 = BULLET_FRAMES
+
+            else:
+                if self.bulletDirection3 == 0:
+                    self.setPos(self.x(), self.y() - BULLET_SPEED)
+                elif self.bulletDirection3 == 2:
+                    self.setPos(self.x(), self.y() + BULLET_SPEED)
+                elif self.bulletDirection3 == 1:
+                    self.setPos(self.x() + BULLET_SPEED, self.y())
+                elif self.bulletDirection3 == 3:
+                    self.setPos(self.x() - BULLET_SPEED, self.y())
+                self.frames3 -= 1
+                if self.frames3 <= 0:
+                    self.active3 = False
+                    self.setPos(SCREEN_WIDTH, SCREEN_HEIGHT)
+
+
 class Brick(QGraphicsPixmapItem):
     def __init__(self, image, parent = None):
         QGraphicsPixmapItem.__init__(self,parent)
@@ -316,15 +445,25 @@ class Scene(QGraphicsScene):
         self.timer = QBasicTimer()
         self.timer.start(FRAME_TIME_MS, self)
 
+
         self.bg = QGraphicsRectItem()
         self.bg.setRect(-1,-1,992,SCREEN_HEIGHT)
         self.bg.setBrush(QBrush(Qt.black))
         self.addItem(self.bg)
         self.level = 1
+
         self.gameLevel = randint(0,2)
         self.gamelevelString = "maps"+str(self.gameLevel)+".txt"
         f = open(self.gamelevelString, 'r')
         maps = [[int(num) for num in line.split(',')] for line in f]
+
+        self.t = Enemy("Image/enemyTankTop")
+        self.t.setPos(132, 132)
+        self.addItem(self.t)
+        self.update()
+        self.isGameOver = False
+
+
 
         row = 0
         col = 0
@@ -366,13 +505,16 @@ class Scene(QGraphicsScene):
                             (SCREEN_HEIGHT - self.player2.pixmap().height()) / 1)
 
         self.bullet = Bullet(PLAYER_BULLET_X_OFFSETS,PLAYER_BULLET_Y)
-
         self.bullet.setPos(0,0)
         self.addItem(self.bullet)
 
         self.bullet2 = Bullet(PLAYER_BULLET_X_OFFSETS, PLAYER_BULLET_Y)
         self.bullet2.setPos(SCREEN_WIDTH, SCREEN_HEIGHT)
         self.addItem(self.bullet2)
+
+        self.enemyBullet = Bullet(PLAYER_BULLET_X_OFFSETS, PLAYER_BULLET_Y)
+        self.enemyBullet.setPos(0, 0)
+        self.addItem(self.enemyBullet)
 
         self.addItem(self.player1)
         self.addItem(self.player2)
@@ -428,12 +570,19 @@ class Scene(QGraphicsScene):
         self.enemyNumberPic.setPixmap(QPixmap("Image/enemyTankTop"))
         self.addItem(self.enemyNumberPic)
 
+        """"""
+        # Timer for enemy bullet
+        self.timerEnemy = QTimer()
+        self.timerEnemy.timeout.connect(self.enemyBulletTemp)
+        self.timerEnemy.start(200)
+        """"""
+
         self.view = QGraphicsView(self)
         self.view.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.view.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.view.show()
         self.view.setFixedSize(SCREEN_WIDTH,SCREEN_HEIGHT)
-        self.setSceneRect(0,0,SCREEN_WIDTH,SCREEN_HEIGHT)
+        self.setSceneRect(0 ,0,SCREEN_WIDTH,SCREEN_HEIGHT)
         self.view.setWindowTitle("Battle City")
 
     def keyPressEvent(self, event):
@@ -460,7 +609,6 @@ class Scene(QGraphicsScene):
             self.removeItem(self.bullet)
             self.bullet.active = False
         for brick in niz:
-            #if()
             if(self.bullet.x() >= brick.LeftCor and self.bullet.x() <= brick.RightCor and self.bullet.y() >= brick.TopCor and self.bullet.y() <= brick.BotCor):
                 if(brick.isEagel is True):
                     self.gameOver()
@@ -488,6 +636,8 @@ class Scene(QGraphicsScene):
             self.bullet2.active2 = False
         for brick in niz:
             if (self.bullet2.x() >= brick.LeftCor and self.bullet2.x() <= brick.RightCor and self.bullet2.y() >= brick.TopCor and self.bullet2.y() <= brick.BotCor):
+                if (brick.isEagel is True):
+                    self.gameOver()
                 self.removeItem(brick)
                 niz.remove(brick)
                 self.removeItem(self.bullet2)
@@ -497,7 +647,105 @@ class Scene(QGraphicsScene):
         self.bullet2.game_update2(self.keys_pressed, self.player2)
         if (self.bullet2.active2):
             self.addItem(self.bullet2)
+
+        if (self.enemyBullet.x() + 8 >= 985):
+            self.removeItem(self.enemyBullet)
+            self.enemyBullet.active3 = False
+        elif (self.enemyBullet.x() < 0):
+            self.removeItem(self.enemyBullet)
+            self.enemyBullet.active3 = False
+        elif (self.enemyBullet.y() < 0):
+            self.removeItem(self.enemyBullet)
+            self.enemyBullet.active3 = False
+        elif (self.enemyBullet.y() >= 800):
+            self.removeItem(self.enemyBullet)
+            self.enemyBullet.active3 = False
+        #Player 1
+        if (self.enemyBullet.x() <= self.player1.x()+50 and self.enemyBullet.x() >= self.player1.x() and self.enemyBullet.y() <= self.player1.y()+50 and self.enemyBullet.y() >= self.player1.y() and self.t.isAlive is True and self.player1.lifes > 0):
+            self.player1.lifes = self.player1.lifes - 1
+
+            if(self.player1.lifes == 2):
+                self.player1Lifes.setPixmap(QPixmap("Image/2lifes"))
+            elif(self.player1.lifes == 1):
+                self.player1Lifes.setPixmap(QPixmap("Image/1life"))
+            if(self.player1.lifes >= 1):
+                self.removeItem(self.enemyBullet)
+                self.enemyBullet.active3 = False
+                self.player1.setPos((SCREEN_WIDTH-self.player1.pixmap().width())/5,(SCREEN_HEIGHT-self.player1.pixmap().height())/1)
+            else:
+                self.removeItem(self.player1Lifes)
+                self.player1.lifes = 0
+                self.removeItem(self.player1)
+                self.removeItem(self.bullet)
+                self.removeItem(self.enemyBullet)
+                self.bullet.active = False
+        #Player2
+        if (self.enemyBullet.x() <= self.player2.x()+50 and self.enemyBullet.x() >= self.player2.x() and self.enemyBullet.y() <= self.player2.y()+50 and self.enemyBullet.y() >= self.player2.y() and self.t.isAlive is True and self.player2.lifes > 0):
+            self.player2.lifes = self.player2.lifes - 1
+
+            if (self.player2.lifes == 2):
+                self.player2Lifes.setPixmap(QPixmap("Image/2lifes"))
+            elif (self.player2.lifes == 1):
+                self.player2Lifes.setPixmap(QPixmap("Image/1life"))
+            if(self.player2.lifes >= 1):
+                self.removeItem(self.enemyBullet)
+                self.enemyBullet.active3 = False
+                self.player2.setPos((SCREEN_WIDTH - self.player2.pixmap().width()) / 3*2,(SCREEN_HEIGHT - self.player2.pixmap().height()) / 1)
+            else:
+                self.removeItem(self.player2Lifes)
+                self.player2.lifes = 0
+                self.removeItem(self.player2)
+                self.removeItem(self.bullet2)
+                self.removeItem(self.enemyBullet)
+                self.bullet2.active = False
+
+        #Player 1 killing enemy
+        if (self.bullet.x() <= self.t.x()+50 and self.bullet.x() >= self.t.x() and self.bullet.y() <= self.t.y()+50 and self.bullet.y() >= self.t.y() and self.t.isAlive is True):
+            self.player1.score = self.player1.score + 100
+            self.removeItem(self.t)
+            self.removeItem(self.bullet)
+            self.removeItem(self.enemyBullet)
+            self.bullet.active = False
+            self.enemyBullet.active3 = False
+            self.t.isAlive = False
+
+        # Player 2 killing enemy
+        if (self.bullet2.x() <= self.t.x() + 50 and self.bullet2.x() >= self.t.x() and self.bullet2.y() <= self.t.y() + 50 and self.bullet2.y() >= self.t.y() and self.t.isAlive is True):
+            self.player2.score = self.player2.score + 100
+            self.removeItem(self.t)
+            self.removeItem(self.bullet2)
+            self.removeItem(self.enemyBullet)
+            self.bullet2.active2 = False
+            self.enemyBullet.active3 = False
+            self.t.isAlive = False
+
+        #Game over, player1.lifev and player2.lifes = 0!
+        if(self.player1.lifes == 0 and self.player2.lifes == 0):
+            self.gameOver()
+
+        for brick in niz:
+            if (self.enemyBullet.x() >= brick.LeftCor and self.enemyBullet.x() <= brick.RightCor and self.enemyBullet.y() >= brick.TopCor and self.enemyBullet.y() <= brick.BotCor):
+                if (brick.isEagel is True):
+                    self.gameOver()
+                self.removeItem(brick)
+                niz.remove(brick)
+                self.removeItem(self.enemyBullet)
+                self.enemyBullet.active3 = False
+
+
+        self.t.gameUpdate()
+        self.enemyBullet.game_update3(self.t, self.isGameOver)
+
+        if (self.enemyBullet.active3):
+            self.addItem(self.enemyBullet)
+
+    def enemyBulletTemp(self):
+        print("Mica kurva")
+        #self.enemyBullet.game_update3(self.t, self.isGameOver)
+        self.enemyBullet.enemyBulletFlag = True
+
     def gameOver(self):
+        self.isGameOver = True
         startGameImage = QImage("Image/GameOver.png")
         sStartGameImage = startGameImage.scaled(QSize(1200, 800))
         self.bgGameOver = QGraphicsPixmapItem()
@@ -505,6 +753,8 @@ class Scene(QGraphicsScene):
         self.bgGameOver.setPixmap(QPixmap(sStartGameImage))
         self.addItem(self.bgGameOver)
 
+        self.removeItem(self.enemyBullet)
+        self.enemyBullet.active3 = False
         self.removeItem(self.bullet)
         self.bullet.active = False
         self.player1.lifes = 0
@@ -522,6 +772,8 @@ class Scene(QGraphicsScene):
             self.playerWinsPic.setPos(570, 600)
             self.playerWinsPic.setPixmap(QPixmap("Image/tie"))
         self.addItem(self.playerWinsPic)
+
+        self.timer.stop()
 
 
 if __name__ == '__main__':
