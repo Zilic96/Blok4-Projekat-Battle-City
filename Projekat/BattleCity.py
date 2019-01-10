@@ -3,8 +3,6 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from random import *
-
-
 """class App(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -66,6 +64,7 @@ class Player(QGraphicsPixmapItem):
         self.image = "Image/tankTop"
         self.image2 = "Image/tank2Top"
         self.lifes = 3
+        self.score = 0
     def game_update(self, keys_pressed):
         dx = 0
         dy = 0
@@ -213,7 +212,7 @@ class Bullet(QGraphicsPixmapItem):
 
     def game_update(self, keys_pressed, player):
         if not self.active:
-            if Qt.Key_Space in keys_pressed:
+            if (Qt.Key_Space in keys_pressed and player.lifes > 0):
                 if player.getimage() == "Image/tankTop":
                     self.setBulletImage("Image/bulet")
                     self.bulletDirection = 0
@@ -250,7 +249,7 @@ class Bullet(QGraphicsPixmapItem):
 
     def game_update2(self, keys_pressed, player):
         if not self.active2:
-            if Qt.Key_Control in keys_pressed:
+            if (Qt.Key_Control in keys_pressed and player.lifes > 0):
                 if player.getimage2() == "Image/tank2Top":
                     self.setBulletImage2("Image/bulet")
                     self.bulletDirection2 = 0
@@ -321,6 +320,7 @@ class Scene(QGraphicsScene):
         self.bg.setRect(-1,-1,992,SCREEN_HEIGHT)
         self.bg.setBrush(QBrush(Qt.black))
         self.addItem(self.bg)
+        self.level = 1
         self.gameLevel = randint(0,2)
         self.gamelevelString = "maps"+str(self.gameLevel)+".txt"
         f = open(self.gamelevelString, 'r')
@@ -418,7 +418,7 @@ class Scene(QGraphicsScene):
         self.addItem(self.levelFlag)
 
         self.levelNumber = QGraphicsSimpleTextItem()
-        self.levelNumber.setText(str(self.gameLevel))
+        self.levelNumber.setText(str(self.level))
         self.levelNumber.setPos(1040,770)
         self.levelNumber.setBrush(QBrush(Qt.black))
         self.addItem(self.levelNumber)
@@ -464,7 +464,7 @@ class Scene(QGraphicsScene):
             if(self.bullet.x() >= brick.LeftCor and self.bullet.x() <= brick.RightCor and self.bullet.y() >= brick.TopCor and self.bullet.y() <= brick.BotCor):
                 if(brick.isEagel is True):
                     self.gameOver()
-
+                brick.setPixmap(QPixmap("Image/P1"))
                 self.removeItem(brick)
                 niz.remove(brick)
                 self.removeItem(self.bullet)
@@ -507,15 +507,22 @@ class Scene(QGraphicsScene):
 
         self.removeItem(self.bullet)
         self.bullet.active = False
+        self.player1.lifes = 0
         self.removeItem(self.bullet2)
         self.bullet2.active2 = False
+        self.player2.lifes = 0
 
-        """self.button = QPushButton('New Game', self)
-        self.button.resize(200, 60)
-        self.button.move(500, 540)
-        self.button.setStyleSheet("background-color: #BD4400")
-        self.addItem(self.button)
-        self.button.clicked.connect(self.__init__())"""
+        self.playerWinsPic = QGraphicsPixmapItem()
+        self.playerWinsPic.setPos(450, 600)
+        if(self.player1.score > self.player2.score):
+            self.playerWinsPic.setPixmap(QPixmap("Image/player1Wins"))
+        elif(self.player2.score > self.player1.score):
+            self.playerWinsPic.setPixmap(QPixmap("Image/player2Wins"))
+        else:
+            self.playerWinsPic.setPos(570, 600)
+            self.playerWinsPic.setPixmap(QPixmap("Image/tie"))
+        self.addItem(self.playerWinsPic)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
