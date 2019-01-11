@@ -58,7 +58,8 @@ enemyPositions = [(0,0)]
 
 maps = []
 niz = []
-
+enemies = []
+enemyTankNumber = 1
 class Player(QGraphicsPixmapItem):
     def __init__(self, image, parent = None):
         QGraphicsPixmapItem.__init__(self,parent)
@@ -302,7 +303,6 @@ class Bullet(QGraphicsPixmapItem):
     def game_update(self, keys_pressed, player):
         if not self.active:
             if (Qt.Key_Space in keys_pressed and player.lifes > 0):
-                print(str(player.lifes))
                 if player.getimage() == "Image/tankTop":
                     self.setBulletImage("Image/bulet")
                     self.bulletDirection = 0
@@ -457,11 +457,11 @@ class Scene(QGraphicsScene):
         f = open(self.gamelevelString, 'r')
         maps = [[int(num) for num in line.split(',')] for line in f]
 
-        self.t = Enemy("Image/enemyTankTop")
-        self.t.setPos(132, 132)
+        """self.t = Enemy("Image/enemyTankTop")
+        self.t.setPos(1, 1)
         self.addItem(self.t)
         self.update()
-        self.isGameOver = False
+        self.isGameOver = False"""
 
 
 
@@ -505,16 +505,14 @@ class Scene(QGraphicsScene):
                             (SCREEN_HEIGHT - self.player2.pixmap().height()) / 1)
 
         self.bullet = Bullet(PLAYER_BULLET_X_OFFSETS,PLAYER_BULLET_Y)
-        self.bullet.setPos(0,0)
+        self.bullet.setPos(-1,-1)
         self.addItem(self.bullet)
 
         self.bullet2 = Bullet(PLAYER_BULLET_X_OFFSETS, PLAYER_BULLET_Y)
-        self.bullet2.setPos(SCREEN_WIDTH, SCREEN_HEIGHT)
+        self.bullet2.setPos(-1, -1)
         self.addItem(self.bullet2)
 
-        self.enemyBullet = Bullet(PLAYER_BULLET_X_OFFSETS, PLAYER_BULLET_Y)
-        self.enemyBullet.setPos(0, 0)
-        self.addItem(self.enemyBullet)
+        """"""
 
         self.addItem(self.player1)
         self.addItem(self.player2)
@@ -559,11 +557,36 @@ class Scene(QGraphicsScene):
         self.levelFlag.setPixmap(QPixmap("Image/levelFlag"))
         self.addItem(self.levelFlag)
 
+        self.levelNumberFont = QFont()
+        self.levelNumberFont.setPixelSize(25)
+        self.levelNumberFont.setBold(1)
         self.levelNumber = QGraphicsSimpleTextItem()
         self.levelNumber.setText(str(self.level))
-        self.levelNumber.setPos(1040,770)
+        self.levelNumber.setPos(1060,755)
         self.levelNumber.setBrush(QBrush(Qt.black))
+        self.levelNumber.setFont(self.levelNumberFont)
         self.addItem(self.levelNumber)
+
+        self.player1ScoreFont = QFont()
+        self.player1ScoreFont.setPixelSize(35)
+        self.player1ScoreFont.setBold(1)
+        self.player1ScoreLabel = QGraphicsSimpleTextItem()
+        self.player1ScoreLabel.setText("P1 : " + str(self.player1.score))
+        self.player1ScoreLabel.setPos(1020, 230)
+        self.player1ScoreLabel.setBrush(QBrush(Qt.black))
+        self.player1ScoreLabel.setFont(self.player1ScoreFont)
+        self.addItem(self.player1ScoreLabel)
+
+        self.player2ScoreFont = QFont()
+        self.player2ScoreFont.setPixelSize(35)
+        self.player2ScoreFont.setBold(1)
+        self.player2ScoreLabel = QGraphicsSimpleTextItem()
+        self.player2ScoreLabel.setText("P2 : " + str(self.player1.score))
+        self.player2ScoreLabel.setPos(1020, 290)
+        self.player2ScoreLabel.setBrush(QBrush(Qt.black))
+        self.player2ScoreLabel.setFont(self.player2ScoreFont)
+        self.addItem(self.player2ScoreLabel)
+
 
         self.enemyNumberPic = QGraphicsPixmapItem()
         self.enemyNumberPic.setPos(1020, 400)
@@ -572,10 +595,19 @@ class Scene(QGraphicsScene):
 
         """"""
         # Timer for enemy bullet
+
         self.timerEnemy = QTimer()
         self.timerEnemy.timeout.connect(self.enemyBulletTemp)
-        self.timerEnemy.start(200)
+        self.timerEnemy.start(2000)
         """"""
+
+        self.enemyNumber = 6
+
+        self.thread = QThread()
+        self.moveToThread(self.thread)
+        for i in range(0,6):
+            self.thread.started.connect(self.createEnemy)
+        self.thread.start()
 
         self.view = QGraphicsView(self)
         self.view.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -584,6 +616,25 @@ class Scene(QGraphicsScene):
         self.view.setFixedSize(SCREEN_WIDTH,SCREEN_HEIGHT)
         self.setSceneRect(0 ,0,SCREEN_WIDTH,SCREEN_HEIGHT)
         self.view.setWindowTitle("Battle City")
+
+    #@pyqtSlot()
+    def createEnemy(self):
+        global enemyTankNumber
+        self.t = Enemy("Image/enemyTankTop")
+        self.t.setPos(enemyTankNumber*100, 1)
+        self.addItem(self.t)
+        self.update()
+        self.isGameOver = False
+
+        self.enemyBullet = Bullet(PLAYER_BULLET_X_OFFSETS, PLAYER_BULLET_Y)
+        self.enemyBullet.setPos(-1, -1)
+        self.addItem(self.enemyBullet)
+
+        enemies.append((self.t, self.enemyBullet))
+
+        enemyTankNumber = enemyTankNumber + 1
+        if (enemyTankNumber == 7):
+            enemyTankNumber = 1
 
     def keyPressEvent(self, event):
         self.keys_pressed.add(event.key())
@@ -596,6 +647,7 @@ class Scene(QGraphicsScene):
         self.update()
 
     def game_update(self):
+        #Player 1 killing bricks
         if (self.bullet.x() + 8 >= 985):
             self.removeItem(self.bullet)
             self.bullet.active = False
@@ -622,6 +674,7 @@ class Scene(QGraphicsScene):
         if(self.bullet.active):
             self.addItem(self.bullet)
 
+        # Player 2 killing bricks
         if (self.bullet2.x() + 8 >= 985):
             self.removeItem(self.bullet2)
             self.bullet2.active2 = False
@@ -642,12 +695,13 @@ class Scene(QGraphicsScene):
                 niz.remove(brick)
                 self.removeItem(self.bullet2)
                 self.bullet2.active2 = False
-
         self.player2.game_update2(self.keys_pressed)
         self.bullet2.game_update2(self.keys_pressed, self.player2)
         if (self.bullet2.active2):
             self.addItem(self.bullet2)
 
+        # Enemy killing bricks
+        #for enemy in enemies:
         if (self.enemyBullet.x() + 8 >= 985):
             self.removeItem(self.enemyBullet)
             self.enemyBullet.active3 = False
@@ -702,6 +756,7 @@ class Scene(QGraphicsScene):
         #Player 1 killing enemy
         if (self.bullet.x() <= self.t.x()+50 and self.bullet.x() >= self.t.x() and self.bullet.y() <= self.t.y()+50 and self.bullet.y() >= self.t.y() and self.t.isAlive is True):
             self.player1.score = self.player1.score + 100
+            self.player1ScoreLabel.setText("P1 : " + str(self.player1.score))
             self.removeItem(self.t)
             self.removeItem(self.bullet)
             self.removeItem(self.enemyBullet)
@@ -709,9 +764,11 @@ class Scene(QGraphicsScene):
             self.enemyBullet.active3 = False
             self.t.isAlive = False
 
+
         # Player 2 killing enemy
         if (self.bullet2.x() <= self.t.x() + 50 and self.bullet2.x() >= self.t.x() and self.bullet2.y() <= self.t.y() + 50 and self.bullet2.y() >= self.t.y() and self.t.isAlive is True):
             self.player2.score = self.player2.score + 100
+            self.player2ScoreLabel.setText("P2 : " + str(self.player2.score))
             self.removeItem(self.t)
             self.removeItem(self.bullet2)
             self.removeItem(self.enemyBullet)
@@ -732,17 +789,19 @@ class Scene(QGraphicsScene):
                 self.removeItem(self.enemyBullet)
                 self.enemyBullet.active3 = False
 
+        for enemy in enemies:
+            enemy[0].gameUpdate()
+            enemy[1].game_update3(enemy[0], self.isGameOver)
+            if (enemy[1].active3):
+                self.addItem(enemy[1])
+        #self.enemyBullet.game_update3(self.t, self.isGameOver)
 
-        self.t.gameUpdate()
-        self.enemyBullet.game_update3(self.t, self.isGameOver)
-
-        if (self.enemyBullet.active3):
-            self.addItem(self.enemyBullet)
+        #if (self.enemyBullet.active3):
+            #self.addItem(self.enemyBullet)
 
     def enemyBulletTemp(self):
-        print("Mica kurva")
-        #self.enemyBullet.game_update3(self.t, self.isGameOver)
-        self.enemyBullet.enemyBulletFlag = True
+        for enemy in enemies:
+            enemy[1].enemyBulletFlag = True
 
     def gameOver(self):
         self.isGameOver = True
