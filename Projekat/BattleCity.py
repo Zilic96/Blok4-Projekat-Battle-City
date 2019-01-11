@@ -53,6 +53,7 @@ PLAYER_BULLET_Y         = 15
 BULLET_SPEED            = 10  # pix/frame
 BULLET_FRAMES           = 110
 FRAME_TIME_MS           = 16  # ms/frame
+ENEMY_BULLET_TIMER      = 25000
 playerPositions = [(0,0),(0,0)]
 enemyPositions = [(0,0)]
 
@@ -78,6 +79,16 @@ class Player(QGraphicsPixmapItem):
                     if ((self.y() >= b.TopCor and self.y() <= b.BotCor) or (self.y() + 50 >= b.TopCor and self.y() + 50 <= b.BotCor) or (self.y() < b.TopCor and self.y() + 50 > b.BotCor)):
                         dx -= 0
                         canMove = False
+            for enemy in enemies:
+                if (self.x() >= enemy[0].x() and self.x() <= enemy[0].x()+53):
+                    if ((self.y() >= enemy[0].y() and self.y() <= enemy[0].y()+50) or (self.y() + 50 >= enemy[0].y() and self.y() + 50 <= enemy[0].y()+50)):
+                        dx -= 0
+                        canMove = False
+
+            if (self.x() >= playerPositions[1][0] and self.x() <= playerPositions[1][0] + 53):
+                if ((self.y() >= playerPositions[1][1] and self.y() <= playerPositions[1][1] + 50) or (self.y() + 50 >= playerPositions[1][1] and self.y() + 50 <= playerPositions[1][1] + 50)):
+                    dx -= 0
+                    canMove = False
 
             if self.x() <= 0:
                 dx -= 0
@@ -92,6 +103,17 @@ class Player(QGraphicsPixmapItem):
                         dx -= 0
                         canMove = False
 
+            for enemy in enemies:
+                if (self.x() + 50 >= enemy[0].x()-3 and self.x()+ 50 <= enemy[0].x()+50):
+                    if ((self.y() >= enemy[0].y() and self.y() <= enemy[0].y()+50) or (self.y() + 50 >= enemy[0].y() and self.y() + 50 <= enemy[0].y()+50)):
+                        dx -= 0
+                        canMove = False
+
+            if (self.x() + 50 >= playerPositions[1][0]-3 and self.x() + 50 <= playerPositions[1][0] + 50):
+                if ((self.y() >= playerPositions[1][1] and self.y() <= playerPositions[1][1] + 50) or (self.y() + 50 >= playerPositions[1][1] and self.y() + 50 <= playerPositions[1][1] + 50)):
+                    dx -= 0
+                    canMove = False
+
             if self.x() >= 941:
                 dx -= 0
             elif(canMove):
@@ -105,6 +127,17 @@ class Player(QGraphicsPixmapItem):
                         dy -= 0
                         canMove = False
 
+            for enemy in enemies:
+                if (self.y() <= enemy[0].y()+53 and self.y() >= enemy[0].y()):
+                    if ((self.x() >= enemy[0].x() and self.x() <= enemy[0].x()+50) or ( self.x() + 50 >= enemy[0].x() and self.x() + 50 <= enemy[0].x()+50)):
+                        dy -= 0
+                        canMove = False
+
+            if (self.y() <= playerPositions[1][1] + 53 and self.y() >= playerPositions[1][1]):
+                if ((self.x() >= playerPositions[1][0] and self.x() <= playerPositions[1][0] + 50) or (self.x() + 50 >= playerPositions[1][0] and self.x() + 50 <= playerPositions[1][0] + 50)):
+                    dy -= 0
+                    canMove = False
+
             if self.y() <= 0:
                 dy -= 0
             elif (canMove):
@@ -117,6 +150,18 @@ class Player(QGraphicsPixmapItem):
                     if ((self.x() >= b.LeftCor and self.x() <= b.RightCor) or ( self.x() + 50 >= b.LeftCor and self.x() + 50 <= b.RightCor) or (self.x() < b.LeftCor and self.x() + 50 > b.RightCor)):
                         dy -= 0
                         canMove = False
+
+            for enemy in enemies:
+                if (self.y() + 50 <= enemy[0].y()+50 and self.y() + 50 >= enemy[0].y()-3):
+                    if ((self.x() >= enemy[0].x() and self.x() <= enemy[0].x()+50) or ( self.x() + 50 >= enemy[0].x() and self.x() + 50 <= enemy[0].x()+50)):
+                        dy -= 0
+                        canMove = False
+
+            if (self.y() + 50 <= playerPositions[1][1] + 50 and self.y() + 50 >= playerPositions[1][1]-3):
+                if ((self.x() >= playerPositions[1][0] and self.x() <= playerPositions[1][0] + 50) or (self.x() + 50 >= playerPositions[1][0] and self.x() + 50 <= playerPositions[1][0] + 50)):
+                    dy -= 0
+                    canMove = False
+
             if self.y() >= 746:
                 dy -= 0
             elif(canMove):
@@ -135,6 +180,18 @@ class Player(QGraphicsPixmapItem):
                     if ((self.y() >= b.TopCor and self.y() <= b.BotCor) or (self.y() + 50 >= b.TopCor and self.y() + 50 <= b.BotCor) or (self.y() < b.TopCor and self.y() + 50 > b.BotCor)):
                         dx -= 0
                         canMove = False
+
+            for enemy in enemies:
+                if (self.x() >= enemy[0].x() and self.x() <= enemy[0].x()+53):
+                    if ((self.y() >= enemy[0].y() and self.y() <= enemy[0].y()+50) or (self.y() + 50 >= enemy[0].y() and self.y() + 50 <= enemy[0].y()+50)):
+                        dx -= 0
+                        canMove = False
+
+            if (self.x() >= playerPositions[0][0] and self.x() <= playerPositions[0][0] + 53):
+                if ((self.y() >= playerPositions[0][1] and self.y() <= playerPositions[0][1] + 50) or (self.y() + 50 >= playerPositions[0][1] and self.y() + 50 <= playerPositions[0][1] + 50)):
+                    dx -= 0
+                    canMove = False
+
             if self.x() <= 0 :
                 dx -= 0
             elif(canMove):
@@ -146,6 +203,18 @@ class Player(QGraphicsPixmapItem):
                     if ((self.y() >= b.TopCor and self.y() <= b.BotCor) or (self.y() + 50 >= b.TopCor and self.y() + 50 <= b.BotCor) or (self.y() < b.TopCor and self.y() + 50 > b.BotCor)):
                         dx -= 0
                         canMove = False
+
+            for enemy in enemies:
+                if (self.x() + 50 >= enemy[0].x()-3 and self.x()+ 50 <= enemy[0].x()+50):
+                    if ((self.y() >= enemy[0].y() and self.y() <= enemy[0].y()+50) or (self.y() + 50 >= enemy[0].y() and self.y() + 50 <= enemy[0].y()+50)):
+                        dx -= 0
+                        canMove = False
+
+            if (self.x() + 50 >= playerPositions[0][0]-3 and self.x() + 50 <= playerPositions[0][0] + 50):
+                if ((self.y() >= playerPositions[0][1] and self.y() <= playerPositions[0][1] + 50) or (self.y() + 50 >= playerPositions[0][1] and self.y() + 50 <= playerPositions[0][1] + 50)):
+                    dx -= 0
+                    canMove = False
+
             if self.x() >= 942:
                 dx -= 0
             elif(canMove):
@@ -157,6 +226,18 @@ class Player(QGraphicsPixmapItem):
                     if ((self.x() >= b.LeftCor and self.x() <= b.RightCor) or ( self.x() + 50 >= b.LeftCor and self.x() + 50 <= b.RightCor) or (self.x() < b.LeftCor and self.x() + 50 > b.RightCor)):
                         dy -= 0
                         canMove = False
+
+            for enemy in enemies:
+                if (self.y() <= enemy[0].y()+53 and self.y() >= enemy[0].y()):
+                    if ((self.x() >= enemy[0].x() and self.x() <= enemy[0].x()+50) or ( self.x() + 50 >= enemy[0].x() and self.x() + 50 <= enemy[0].x()+50)):
+                        dy -= 0
+                        canMove = False
+
+            if (self.y() <= playerPositions[0][1] + 53 and self.y() >= playerPositions[0][1]):
+                if ((self.x() >= playerPositions[0][0] and self.x() <= playerPositions[0][0] + 50) or (self.x() + 50 >= playerPositions[0][0] and self.x() + 50 <= playerPositions[0][0] + 50)):
+                    dy -= 0
+                    canMove = False
+
             if self.y() <= 0:
                 dy -= 0
             elif(canMove):
@@ -168,6 +249,18 @@ class Player(QGraphicsPixmapItem):
                     if ((self.x() >= b.LeftCor and self.x() <= b.RightCor) or ( self.x() + 50 >= b.LeftCor and self.x() + 50 <= b.RightCor) or (self.x() < b.LeftCor and self.x() + 50 > b.RightCor)):
                         dy -= 0
                         canMove = False
+
+            for enemy in enemies:
+                if (self.y() + 50 <= enemy[0].y()+50 and self.y() + 50 >= enemy[0].y()-3):
+                    if ((self.x() >= enemy[0].x() and self.x() <= enemy[0].x()+50) or ( self.x() + 50 >= enemy[0].x() and self.x() + 50 <= enemy[0].x()+50)):
+                        dy -= 0
+                        canMove = False
+
+            if (self.y() + 50 <= playerPositions[0][1] + 50 and self.y() + 50 >= playerPositions[0][1]-3):
+                if ((self.x() >= playerPositions[0][0] and self.x() <= playerPositions[0][0] + 50) or (self.x() + 50 >= playerPositions[0][0] and self.x() + 50 <= playerPositions[0][0] + 50)):
+                    dy -= 0
+                    canMove = False
+
             if self.y() >= 746:
                 dy -= 0
             elif(canMove):
@@ -203,7 +296,7 @@ class Enemy(QGraphicsPixmapItem):
         dx = 0
         dy = 0
         canMove = True
-        if(self.temp > 75):
+        if(self.temp > 120):
             self.rand = randint(0,3)
             self.temp = 0
         if(self.rand == 0):
@@ -212,6 +305,25 @@ class Enemy(QGraphicsPixmapItem):
                     if ((self.y() >= b.TopCor and self.y() <= b.BotCor) or (self.y() + 50 >= b.TopCor and self.y() + 50 <= b.BotCor) or (self.y() < b.TopCor and self.y() + 50 > b.BotCor)):
                         dx -= 0
                         canMove = False
+
+
+            for enemy in enemies:
+                if(self.x() != enemy[0].x() and self.x() != enemy[0].y()):
+                    if (self.x() >= enemy[0].x() and self.x() <= enemy[0].x() + 53):
+                        if ((self.y() >= enemy[0].y() and self.y() <= enemy[0].y()+50) or (self.y() + 50 >= enemy[0].y() and self.y() + 50 <= enemy[0].y()+50)):
+                            dx -= 0
+                            canMove = False
+
+            if (self.x() >= playerPositions[0][0] and self.x() <= playerPositions[0][0] + 53):
+                if ((self.y() >= playerPositions[0][1] and self.y() <= playerPositions[0][1] + 50) or (self.y() + 50 >= playerPositions[0][1] and self.y() + 50 <= playerPositions[0][1] + 50)):
+                    dx -= 0
+                    canMove = False
+
+            if (self.x() >= playerPositions[1][0] and self.x() <= playerPositions[1][0] + 53):
+                if ((self.y() >= playerPositions[1][1] and self.y() <= playerPositions[1][1] + 50) or (self.y() + 50 >= playerPositions[1][1] and self.y() + 50 <= playerPositions[1][1] + 50)):
+                    dx -= 0
+                    canMove = False
+
 
             if self.x() <= 0:
                 dx -= 0
@@ -226,6 +338,24 @@ class Enemy(QGraphicsPixmapItem):
                     if ((self.x() >= b.LeftCor and self.x() <= b.RightCor) or ( self.x() + 50 >= b.LeftCor and self.x() + 50 <= b.RightCor) or (self.x() < b.LeftCor and self.x() + 50 > b.RightCor)):
                         dy -= 0
                         canMove = False
+
+            for enemy in enemies:
+                if (self.x() != enemy[0].x() and self.x() != enemy[0].y()):
+                    if (self.y() <= enemy[0].y()+53 and self.y() >= enemy[0].y()):
+                        if ((self.x() >= enemy[0].x() and self.x() <= enemy[0].x()+50) or ( self.x() + 50 >= enemy[0].x() and self.x() + 50 <= enemy[0].x()+50)):
+                            dy -= 0
+                            canMove = False
+
+            if (self.y() <= playerPositions[0][1]+53 and self.y() >= playerPositions[0][1]):
+                        if ((self.x() >= playerPositions[0][0] and self.x() <= playerPositions[0][0]+50) or ( self.x() + 50 >= playerPositions[0][0] and self.x() + 50 <= playerPositions[0][0]+50)):
+                            dy -= 0
+                            canMove = False
+
+            if (self.y() <= playerPositions[1][1]+53 and self.y() >= playerPositions[1][1]):
+                        if ((self.x() >= playerPositions[1][0] and self.x() <= playerPositions[1][0]+50) or ( self.x() + 50 >= playerPositions[1][0] and self.x() + 50 <= playerPositions[1][0]+50)):
+                            dy -= 0
+                            canMove = False
+
             if self.y() <= 0:
                 dy -= 0
             elif(canMove):
@@ -239,6 +369,24 @@ class Enemy(QGraphicsPixmapItem):
                     if ((self.y() >= b.TopCor and self.y() <= b.BotCor) or (self.y() + 50 >= b.TopCor and self.y() + 50 <= b.BotCor) or (self.y() < b.TopCor and self.y() + 50 > b.BotCor)):
                         dx -= 0
                         canMove = False
+
+            for enemy in enemies:
+                if (self.x() != enemy[0].x() and self.x() != enemy[0].y()):
+                    if (self.x() + 50 >= enemy[0].x()-3 and self.x() + 50 <= enemy[0].x()+50):
+                        if ((self.y() >= enemy[0].y() and self.y() <= enemy[0].y()+50) or (self.y() + 50 >= enemy[0].y() and self.y() + 50 <= enemy[0].y()+50)):
+                            dx -= 0
+                            canMove = False
+
+            if (self.x() + 50 >= playerPositions[0][0]-3 and self.x() + 50 <= playerPositions[0][0] + 50):
+                if ((self.y() >= playerPositions[0][1] and self.y() <= playerPositions[0][1] + 50) or (self.y() + 50 >= playerPositions[0][1] and self.y() + 50 <= playerPositions[0][1] + 50)):
+                    dx -= 0
+                    canMove = False
+
+            if (self.x() + 50 >= playerPositions[1][0]-3 and self.x() + 50 <= playerPositions[1][0] + 50):
+                if ((self.y() >= playerPositions[1][1] and self.y() <= playerPositions[1][1] + 50) or (self.y() + 50 >= playerPositions[1][1] and self.y() + 50 <= playerPositions[1][1] + 50)):
+                    dx -= 0
+                    canMove = False
+
             if self.x() >= 942:
                 dx -= 0
             elif(canMove):
@@ -252,6 +400,24 @@ class Enemy(QGraphicsPixmapItem):
                     if ((self.x() >= b.LeftCor and self.x() <= b.RightCor) or ( self.x() + 50 >= b.LeftCor and self.x() + 50 <= b.RightCor) or (self.x() < b.LeftCor and self.x() + 50 > b.RightCor)):
                         dy -= 0
                         canMove = False
+
+            for enemy in enemies:
+                if (self.x() != enemy[0].x() and self.x() != enemy[0].y()):
+                    if (self.y() + 50 <= enemy[0].y()+50 and self.y() + 50 >= enemy[0].y()-3):
+                        if ((self.x() >= enemy[0].x() and self.x() <= enemy[0].x()+50) or (self.x() + 50 >= enemy[0].x() and self.x() + 50 <= enemy[0].x()+50)):
+                            dy -= 0
+                            canMove = False
+
+            if (self.y() + 50 <= playerPositions[0][1] + 50 and self.y() + 50 >= playerPositions[0][1]-3):
+                if ((self.x() >= playerPositions[0][0] and self.x() <= playerPositions[0][0] + 50) or (self.x() + 50 >= playerPositions[0][0] and self.x() + 50 <= playerPositions[0][0] + 50)):
+                    dy -= 0
+                    canMove = False
+
+            if (self.y() + 50 <= playerPositions[1][1] + 50 and self.y() + 50 >= playerPositions[1][1]-3):
+                if ((self.x() >= playerPositions[1][0] and self.x() <= playerPositions[1][0] + 50) or (self.x() + 50 >= playerPositions[1][0] and self.x() + 50 <= playerPositions[1][0] + 50)):
+                    dy -= 0
+                    canMove = False
+
             if self.y() >= 746:
                 dy -= 0
             elif(canMove):
@@ -598,7 +764,7 @@ class Scene(QGraphicsScene):
 
         self.timerEnemy = QTimer()
         self.timerEnemy.timeout.connect(self.enemyBulletTemp)
-        self.timerEnemy.start(2000)
+        self.timerEnemy.start(ENEMY_BULLET_TIMER)
         """"""
 
         self.enemyNumber = 6
@@ -621,7 +787,7 @@ class Scene(QGraphicsScene):
     def createEnemy(self):
         global enemyTankNumber
         self.t = Enemy("Image/enemyTankTop")
-        self.t.setPos(enemyTankNumber*100, 1)
+        self.t.setPos(enemyTankNumber*120, 1)
         self.addItem(self.t)
         self.update()
         self.isGameOver = False
@@ -701,93 +867,98 @@ class Scene(QGraphicsScene):
             self.addItem(self.bullet2)
 
         # Enemy killing bricks
-        #for enemy in enemies:
-        if (self.enemyBullet.x() + 8 >= 985):
-            self.removeItem(self.enemyBullet)
-            self.enemyBullet.active3 = False
-        elif (self.enemyBullet.x() < 0):
-            self.removeItem(self.enemyBullet)
-            self.enemyBullet.active3 = False
-        elif (self.enemyBullet.y() < 0):
-            self.removeItem(self.enemyBullet)
-            self.enemyBullet.active3 = False
-        elif (self.enemyBullet.y() >= 800):
-            self.removeItem(self.enemyBullet)
-            self.enemyBullet.active3 = False
-        #Player 1
-        if (self.enemyBullet.x() <= self.player1.x()+50 and self.enemyBullet.x() >= self.player1.x() and self.enemyBullet.y() <= self.player1.y()+50 and self.enemyBullet.y() >= self.player1.y() and self.t.isAlive is True and self.player1.lifes > 0):
-            self.player1.lifes = self.player1.lifes - 1
+        for enemy in enemies:
+            if (enemy[1].x() + 8 >= 985):
+                self.removeItem(enemy[1])
+                enemy[1].active3 = False
+            elif (enemy[1].x() < 0):
+                self.removeItem(enemy[1])
+                enemy[1].active3 = False
+            elif (enemy[1].y() < 0):
+                self.removeItem(enemy[1])
+                enemy[1].active3 = False
+            elif (enemy[1].y() >= 800):
+                self.removeItem(enemy[1])
+                enemy[1].active3 = False
+            #Player 1
+            if (enemy[1].x() <= self.player1.x()+50 and enemy[1].x() >= self.player1.x() and enemy[1].y() <= self.player1.y()+50 and enemy[1].y() >= self.player1.y() and enemy[0].isAlive is True and self.player1.lifes > 0):
+                self.player1.lifes = self.player1.lifes - 1
 
-            if(self.player1.lifes == 2):
-                self.player1Lifes.setPixmap(QPixmap("Image/2lifes"))
-            elif(self.player1.lifes == 1):
-                self.player1Lifes.setPixmap(QPixmap("Image/1life"))
-            if(self.player1.lifes >= 1):
-                self.removeItem(self.enemyBullet)
-                self.enemyBullet.active3 = False
-                self.player1.setPos((SCREEN_WIDTH-self.player1.pixmap().width())/5,(SCREEN_HEIGHT-self.player1.pixmap().height())/1)
-            else:
-                self.removeItem(self.player1Lifes)
-                self.player1.lifes = 0
-                self.removeItem(self.player1)
-                self.removeItem(self.bullet)
-                self.removeItem(self.enemyBullet)
-                self.bullet.active = False
-        #Player2
-        if (self.enemyBullet.x() <= self.player2.x()+50 and self.enemyBullet.x() >= self.player2.x() and self.enemyBullet.y() <= self.player2.y()+50 and self.enemyBullet.y() >= self.player2.y() and self.t.isAlive is True and self.player2.lifes > 0):
-            self.player2.lifes = self.player2.lifes - 1
+                if(self.player1.lifes == 2):
+                    self.player1Lifes.setPixmap(QPixmap("Image/2lifes"))
+                elif(self.player1.lifes == 1):
+                    self.player1Lifes.setPixmap(QPixmap("Image/1life"))
+                if(self.player1.lifes >= 1):
+                    self.removeItem(enemy[1])
+                    enemy[1].active3 = False
+                    self.player1.setPos((SCREEN_WIDTH-self.player1.pixmap().width())/5,(SCREEN_HEIGHT-self.player1.pixmap().height())/1)
+                else:
+                    self.removeItem(self.player1Lifes)
+                    self.player1.lifes = 0
+                    self.removeItem(self.player1)
+                    self.removeItem(self.bullet)
+                    self.removeItem(enemy[1])
+                    self.bullet.active = False
+            #Player2
+            if (enemy[1].x() <= self.player2.x()+50 and enemy[1].x() >= self.player2.x() and enemy[1].y() <= self.player2.y()+50 and enemy[1].y() >= self.player2.y() and enemy[0].isAlive is True and self.player2.lifes > 0):
+                self.player2.lifes = self.player2.lifes - 1
 
-            if (self.player2.lifes == 2):
-                self.player2Lifes.setPixmap(QPixmap("Image/2lifes"))
-            elif (self.player2.lifes == 1):
-                self.player2Lifes.setPixmap(QPixmap("Image/1life"))
-            if(self.player2.lifes >= 1):
-                self.removeItem(self.enemyBullet)
-                self.enemyBullet.active3 = False
-                self.player2.setPos((SCREEN_WIDTH - self.player2.pixmap().width()) / 3*2,(SCREEN_HEIGHT - self.player2.pixmap().height()) / 1)
-            else:
-                self.removeItem(self.player2Lifes)
-                self.player2.lifes = 0
-                self.removeItem(self.player2)
-                self.removeItem(self.bullet2)
-                self.removeItem(self.enemyBullet)
-                self.bullet2.active = False
+                if (self.player2.lifes == 2):
+                    self.player2Lifes.setPixmap(QPixmap("Image/2lifes"))
+                elif (self.player2.lifes == 1):
+                    self.player2Lifes.setPixmap(QPixmap("Image/1life"))
+                if(self.player2.lifes >= 1):
+                    self.removeItem(enemy[1])
+                    enemy[1].active3 = False
+                    self.player2.setPos((SCREEN_WIDTH - self.player2.pixmap().width()) / 3*2,(SCREEN_HEIGHT - self.player2.pixmap().height()) / 1)
+                else:
+                    self.removeItem(self.player2Lifes)
+                    self.player2.lifes = 0
+                    self.removeItem(self.player2)
+                    self.removeItem(self.bullet2)
+                    self.removeItem(enemy[1])
+                    self.bullet2.active = False
 
         #Player 1 killing enemy
-        if (self.bullet.x() <= self.t.x()+50 and self.bullet.x() >= self.t.x() and self.bullet.y() <= self.t.y()+50 and self.bullet.y() >= self.t.y() and self.t.isAlive is True):
-            self.player1.score = self.player1.score + 100
-            self.player1ScoreLabel.setText("P1 : " + str(self.player1.score))
-            self.removeItem(self.t)
-            self.removeItem(self.bullet)
-            self.removeItem(self.enemyBullet)
-            self.bullet.active = False
-            self.enemyBullet.active3 = False
-            self.t.isAlive = False
+        for enemyPlayer1 in enemies:
+            if (self.bullet.x() <= enemyPlayer1[0].x()+50 and self.bullet.x() >= enemyPlayer1[0].x() and self.bullet.y() <= enemyPlayer1[0].y()+50 and self.bullet.y() >= enemyPlayer1[0].y() and enemyPlayer1[0].isAlive is True):
+                self.player1.score = self.player1.score + 100
+                self.player1ScoreLabel.setText("P1 : " + str(self.player1.score))
+                self.removeItem(enemyPlayer1[0])
+                self.removeItem(self.bullet)
+                self.removeItem(enemyPlayer1[1])
+                self.bullet.active = False
+                enemyPlayer1[1].active3 = False
+                enemyPlayer1[0].isAlive = False
+                enemies.remove(enemyPlayer1)
 
 
         # Player 2 killing enemy
-        if (self.bullet2.x() <= self.t.x() + 50 and self.bullet2.x() >= self.t.x() and self.bullet2.y() <= self.t.y() + 50 and self.bullet2.y() >= self.t.y() and self.t.isAlive is True):
-            self.player2.score = self.player2.score + 100
-            self.player2ScoreLabel.setText("P2 : " + str(self.player2.score))
-            self.removeItem(self.t)
-            self.removeItem(self.bullet2)
-            self.removeItem(self.enemyBullet)
-            self.bullet2.active2 = False
-            self.enemyBullet.active3 = False
-            self.t.isAlive = False
+        for enemyPlayer2 in enemies:
+            if (self.bullet2.x() <= enemyPlayer2[0].x() + 50 and self.bullet2.x() >= enemyPlayer2[0].x() and self.bullet2.y() <= enemyPlayer2[0].y() + 50 and self.bullet2.y() >= enemyPlayer2[0].y() and enemyPlayer2[0].isAlive is True):
+                self.player2.score = self.player2.score + 100
+                self.player2ScoreLabel.setText("P2 : " + str(self.player2.score))
+                self.removeItem(enemyPlayer2[0])
+                self.removeItem(self.bullet2)
+                self.removeItem(enemyPlayer2[1])
+                self.bullet2.active2 = False
+                enemyPlayer2[1].active3 = False
+                enemyPlayer2[0].isAlive = False
+                enemies.remove(enemyPlayer2)
 
         #Game over, player1.lifev and player2.lifes = 0!
         if(self.player1.lifes == 0 and self.player2.lifes == 0):
             self.gameOver()
 
-        for brick in niz:
-            if (self.enemyBullet.x() >= brick.LeftCor and self.enemyBullet.x() <= brick.RightCor and self.enemyBullet.y() >= brick.TopCor and self.enemyBullet.y() <= brick.BotCor):
-                if (brick.isEagel is True):
-                    self.gameOver()
-                self.removeItem(brick)
-                niz.remove(brick)
-                self.removeItem(self.enemyBullet)
-                self.enemyBullet.active3 = False
+        for enemyBricks in enemies:
+            for brick in niz:
+                if (enemyBricks[1].x() >= brick.LeftCor and enemyBricks[1].x() <= brick.RightCor and enemyBricks[1].y() >= brick.TopCor and enemyBricks[1].y() <= brick.BotCor):
+                    if (brick.isEagel is True):
+                        self.gameOver()
+                    self.removeItem(brick)
+                    niz.remove(brick)
+                    self.removeItem(enemyBricks[1])
+                    enemyBricks[1].active3 = False
 
         for enemy in enemies:
             enemy[0].gameUpdate()

@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0e99aa28-7760-4fc3-8a47-5412907025d1" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Projekat/BattleCity.py" afterPath="$PROJECT_DIR$/Projekat/BattleCity.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -17,8 +16,8 @@
       <file leaf-file-name="BattleCity.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Projekat/BattleCity.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="291">
-              <caret line="706" column="44" lean-forward="true" selection-start-line="706" selection-start-column="44" selection-end-line="706" selection-end-column="44" />
+            <state relative-caret-position="414">
+              <caret line="944" column="47" lean-forward="true" selection-start-line="944" selection-start-column="47" selection-end-line="944" selection-end-column="47" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
@@ -88,8 +87,8 @@
       <find>self.t</find>
       <find>self.enemyBullet</find>
       <find>enemyBulletFlag</find>
-      <find>timer</find>
       <find>enemyBulletTemp</find>
+      <find>timer</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -451,8 +450,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Projekat/BattleCity.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="291">
-          <caret line="706" column="44" lean-forward="true" selection-start-line="706" selection-start-column="44" selection-end-line="706" selection-end-column="44" />
+        <state relative-caret-position="414">
+          <caret line="944" column="47" lean-forward="true" selection-start-line="944" selection-start-column="47" selection-end-line="944" selection-end-column="47" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
           </folding>
