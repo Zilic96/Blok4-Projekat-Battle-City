@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0e99aa28-7760-4fc3-8a47-5412907025d1" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Projekat/Image/player1Wins.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Projekat/Image/player2Wins.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Projekat/Image/tie.png" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Projekat/BattleCity.py" afterPath="$PROJECT_DIR$/Projekat/BattleCity.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -17,18 +19,44 @@
       <file leaf-file-name="BattleCity.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Projekat/BattleCity.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="300">
-              <caret line="412" column="0" lean-forward="true" selection-start-line="412" selection-start-column="0" selection-end-line="412" selection-end-column="0" />
+            <state relative-caret-position="282">
+              <caret line="110" column="64" lean-forward="true" selection-start-line="110" selection-start-column="64" selection-end-line="110" selection-end-column="64" />
               <folding>
-                <element signature="e#0#10#0" expanded="true" />
-                <element signature="e#820#12023#0" expanded="false" />
-                <element signature="e#12063#20200#0" expanded="false" />
-                <element signature="e#20241#27040#0" expanded="false" />
-                <element signature="e#27081#27339#0" expanded="false" />
-                <element signature="e#27379#27636#0" expanded="false" />
-                <element signature="e#27678#27809#0" expanded="false" />
-                <element signature="e#27847#55996#0" expanded="false" />
+                <element signature="e#0#31#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Tanks.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Projekat/Tanks.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding>
+                <element signature="e#0#29#0" expanded="true" />
+                <element signature="e#175#11469#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MapItems.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Projekat/MapItems.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="17">
+              <caret line="1" column="0" lean-forward="false" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Imports.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Projekat/Imports.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="136">
+              <caret line="8" column="0" lean-forward="false" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -85,15 +113,15 @@
       </file>
     </leaf>
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>game_update</find>
-      <find>self.powerUpScene</find>
-      <find>powerUpQTimer</find>
-      <find>PLAYER_SPEED</find>
-      <find>7</find>
-      <find>ENEMY_NUMBER</find>
-      <find>print</find>
       <find>-1</find>
       <find>niz</find>
       <find>maps</find>
@@ -116,6 +144,13 @@
       <find>pool</find>
       <find>BULLET_SPEED</find>
       <find>player1 pic</find>
+      <find>print</find>
+      <find>self.playerSpeed</find>
+      <find>PLAYER_SPEED</find>
+      <find>ENEMY_SPEED</find>
+      <find>ENEMY_BULLET_SPEED</find>
+      <find>create</find>
+      <find>MIN_ENEMY_BULLET_TIMER</find>
       <find>#</find>
     </findStrings>
   </component>
@@ -129,6 +164,9 @@
         <option value="$PROJECT_DIR$/Projekat/maps2.txt" />
         <option value="$PROJECT_DIR$/Projekat/maps1.txt" />
         <option value="$PROJECT_DIR$/Projekat/maps0.txt" />
+        <option value="$PROJECT_DIR$/Projekat/Imports.py" />
+        <option value="$PROJECT_DIR$/Projekat/MapItems.py" />
+        <option value="$PROJECT_DIR$/Projekat/Tanks.py" />
         <option value="$PROJECT_DIR$/Projekat/BattleCity.py" />
       </list>
     </option>
@@ -214,9 +252,31 @@
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
     </configuration>
+    <configuration name="Tanks" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Projekat" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="Blok4-Projekat-Battle-City" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Projekat/Tanks.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+    </configuration>
+    <list size="2">
+      <item index="0" class="java.lang.String" itemvalue="Python.BattleCity" />
+      <item index="1" class="java.lang.String" itemvalue="Python.Tanks" />
+    </list>
     <recent_temporary>
-      <list size="1">
+      <list size="2">
         <item index="0" class="java.lang.String" itemvalue="Python.BattleCity" />
+        <item index="1" class="java.lang.String" itemvalue="Python.Tanks" />
       </list>
     </recent_temporary>
   </component>
@@ -279,6 +339,7 @@
           <properties exception="BaseException" />
         </breakpoint>
       </default-breakpoints>
+      <option name="time" value="1" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -288,14 +349,7 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#0#10#0" expanded="true" />
-            <element signature="e#820#12023#0" expanded="false" />
-            <element signature="e#12063#20200#0" expanded="false" />
-            <element signature="e#20241#27040#0" expanded="false" />
-            <element signature="e#27081#27339#0" expanded="false" />
-            <element signature="e#27379#27636#0" expanded="false" />
-            <element signature="e#27678#27809#0" expanded="false" />
-            <element signature="e#27847#55996#0" expanded="false" />
+            <element signature="e#0#31#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -337,14 +391,7 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#0#10#0" expanded="true" />
-            <element signature="e#820#12023#0" expanded="false" />
-            <element signature="e#12063#20200#0" expanded="false" />
-            <element signature="e#20241#27040#0" expanded="false" />
-            <element signature="e#27081#27339#0" expanded="false" />
-            <element signature="e#27379#27636#0" expanded="false" />
-            <element signature="e#27678#27809#0" expanded="false" />
-            <element signature="e#27847#55996#0" expanded="false" />
+            <element signature="e#0#31#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -422,19 +469,39 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Projekat/MapItems.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
+          <caret line="1" column="0" lean-forward="false" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Projekat/Tanks.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#29#0" expanded="true" />
+            <element signature="e#175#11469#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Projekat/Imports.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="8" column="0" lean-forward="false" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Projekat/BattleCity.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
-          <caret line="412" column="0" lean-forward="true" selection-start-line="412" selection-start-column="0" selection-end-line="412" selection-end-column="0" />
+        <state relative-caret-position="282">
+          <caret line="110" column="64" lean-forward="true" selection-start-line="110" selection-start-column="64" selection-end-line="110" selection-end-column="64" />
           <folding>
-            <element signature="e#0#10#0" expanded="true" />
-            <element signature="e#820#12023#0" expanded="false" />
-            <element signature="e#12063#20200#0" expanded="false" />
-            <element signature="e#20241#27040#0" expanded="false" />
-            <element signature="e#27081#27339#0" expanded="false" />
-            <element signature="e#27379#27636#0" expanded="false" />
-            <element signature="e#27678#27809#0" expanded="false" />
-            <element signature="e#27847#55996#0" expanded="false" />
+            <element signature="e#0#31#0" expanded="true" />
           </folding>
         </state>
       </provider>

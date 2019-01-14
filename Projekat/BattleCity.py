@@ -1,3 +1,5 @@
+from Projekat.MapItems import *
+from Projekat.Tanks import *
 import sys
 
 import multiprocessing
@@ -7,578 +9,6 @@ from PyQt5.QtGui import *
 from random import *
 import _thread
 
-
-#PODUPLATI METAK I NAPRAVITI PUCANJE LEVO/DESNO
-SCREEN_WIDTH            = 1200
-SCREEN_HEIGHT           = 800
-PLAYER_SPEED            = 3   # pix/frame
-PLAYER_SPEED2            = 3   # pix/frame
-ENEMY_SPEED             = 2
-PLAYER_BULLET_X_OFFSETS = 23
-PLAYER_BULLET_Y         = 15
-BULLET_SPEED            = 10  # pix/frame
-ENEMY_BULLET_SPEED      = 10  # pix/frame
-BULLET_FRAMES           = 110
-FRAME_TIME_MS           = 16  # ms/frame
-MIN_ENEMY_BULLET_TIMER  = 3000
-MAX_ENEMY_BULLET_TIMER  = 6000
-ENEMY_NUMBER = 6
-
-playerPositions = [(0,0),(0,0)]
-enemyPositions = [(0,0)]
-
-maps = []
-niz = []
-enemies = []
-enemyTankNumber = 1
-class Player(QGraphicsPixmapItem):
-    def __init__(self, image, parent = None):
-        QGraphicsPixmapItem.__init__(self,parent)
-        self.setPixmap(QPixmap(image))
-        self.image = "Image/tankTop"
-        self.image2 = "Image/tank2Top"
-        self.lifes = 3
-        self.score = 0
-    def game_update(self, keys_pressed):
-        dx = 0
-        dy = 0
-        canMove = True
-        if Qt.Key_Left in keys_pressed:
-            for b in niz:
-                if (self.x() >= b.LeftCor and self.x() <= b.RightCor+3):
-                    if ((self.y() >= b.TopCor and self.y() <= b.BotCor) or (self.y() + 50 >= b.TopCor and self.y() + 50 <= b.BotCor) or (self.y() < b.TopCor and self.y() + 50 > b.BotCor)):
-                        dx -= 0
-                        canMove = False
-            for enemy in enemies:
-                if (self.x() >= enemy[0].x() and self.x() <= enemy[0].x()+53):
-                    if ((self.y() >= enemy[0].y() and self.y() <= enemy[0].y()+50) or (self.y() + 50 >= enemy[0].y() and self.y() + 50 <= enemy[0].y()+50)):
-                        dx -= 0
-                        canMove = False
-
-            if (self.x() >= playerPositions[1][0] and self.x() <= playerPositions[1][0] + 53):
-                if ((self.y() >= playerPositions[1][1] and self.y() <= playerPositions[1][1] + 50) or (self.y() + 50 >= playerPositions[1][1] and self.y() + 50 <= playerPositions[1][1] + 50)):
-                    dx -= 0
-                    canMove = False
-
-            if self.x() <= 0:
-                dx -= 0
-            elif (canMove):
-                dx -= PLAYER_SPEED
-            self.setimage("Image/tankLeft")
-
-        elif Qt.Key_Right in keys_pressed:
-            for b in niz:
-                if (self.x() + 50 >= b.LeftCor-3 and self.x()+ 50 <= b.RightCor):
-                    if ((self.y() >= b.TopCor and self.y() <= b.BotCor) or (self.y() + 50 >= b.TopCor and self.y() + 50 <= b.BotCor) or (self.y() < b.TopCor and self.y() + 50 > b.BotCor)):
-                        dx -= 0
-                        canMove = False
-
-            for enemy in enemies:
-                if (self.x() + 50 >= enemy[0].x()-3 and self.x()+ 50 <= enemy[0].x()+50):
-                    if ((self.y() >= enemy[0].y() and self.y() <= enemy[0].y()+50) or (self.y() + 50 >= enemy[0].y() and self.y() + 50 <= enemy[0].y()+50)):
-                        dx -= 0
-                        canMove = False
-
-            if (self.x() + 50 >= playerPositions[1][0]-3 and self.x() + 50 <= playerPositions[1][0] + 50):
-                if ((self.y() >= playerPositions[1][1] and self.y() <= playerPositions[1][1] + 50) or (self.y() + 50 >= playerPositions[1][1] and self.y() + 50 <= playerPositions[1][1] + 50)):
-                    dx -= 0
-                    canMove = False
-
-            if self.x() >= 941:
-                dx -= 0
-            elif(canMove):
-                dx += PLAYER_SPEED
-            self.setimage("Image/tankRight")
-
-        elif Qt.Key_Up in keys_pressed:
-            for b in niz:
-                if (self.y() <= b.BotCor+3 and self.y() >= b.TopCor):
-                    if ((self.x() >= b.LeftCor and self.x() <= b.RightCor) or ( self.x() + 50 >= b.LeftCor and self.x() + 50 <= b.RightCor) or (self.x() < b.LeftCor and self.x() + 50 > b.RightCor)):
-                        dy -= 0
-                        canMove = False
-
-            for enemy in enemies:
-                if (self.y() <= enemy[0].y()+53 and self.y() >= enemy[0].y()):
-                    if ((self.x() >= enemy[0].x() and self.x() <= enemy[0].x()+50) or ( self.x() + 50 >= enemy[0].x() and self.x() + 50 <= enemy[0].x()+50)):
-                        dy -= 0
-                        canMove = False
-
-            if (self.y() <= playerPositions[1][1] + 53 and self.y() >= playerPositions[1][1]):
-                if ((self.x() >= playerPositions[1][0] and self.x() <= playerPositions[1][0] + 50) or (self.x() + 50 >= playerPositions[1][0] and self.x() + 50 <= playerPositions[1][0] + 50)):
-                    dy -= 0
-                    canMove = False
-
-            if self.y() <= 0:
-                dy -= 0
-            elif (canMove):
-                dy -= PLAYER_SPEED
-            self.setimage("Image/tankTop")
-
-        elif Qt.Key_Down in keys_pressed:
-            for b in niz:
-                if (self.y() + 50 <= b.BotCor and self.y() + 50 >= b.TopCor-3):
-                    if ((self.x() >= b.LeftCor and self.x() <= b.RightCor) or ( self.x() + 50 >= b.LeftCor and self.x() + 50 <= b.RightCor) or (self.x() < b.LeftCor and self.x() + 50 > b.RightCor)):
-                        dy -= 0
-                        canMove = False
-
-            for enemy in enemies:
-                if (self.y() + 50 <= enemy[0].y()+50 and self.y() + 50 >= enemy[0].y()-3):
-                    if ((self.x() >= enemy[0].x() and self.x() <= enemy[0].x()+50) or ( self.x() + 50 >= enemy[0].x() and self.x() + 50 <= enemy[0].x()+50)):
-                        dy -= 0
-                        canMove = False
-
-            if (self.y() + 50 <= playerPositions[1][1] + 50 and self.y() + 50 >= playerPositions[1][1]-3):
-                if ((self.x() >= playerPositions[1][0] and self.x() <= playerPositions[1][0] + 50) or (self.x() + 50 >= playerPositions[1][0] and self.x() + 50 <= playerPositions[1][0] + 50)):
-                    dy -= 0
-                    canMove = False
-
-            if self.y() >= 746:
-                dy -= 0
-            elif(canMove):
-                dy += PLAYER_SPEED
-            self.setimage("Image/tankBottom")
-        playerPositions[0] = (self.x()+dx, self.y()+dy)
-        self.setPos(self.x()+dx, self.y()+dy)
-
-    def game_update2(self, keys_pressed):
-        dx = 0
-        dy = 0
-        canMove = True
-        if Qt.Key_A in keys_pressed:
-            for b in niz:
-                if (self.x() >= b.LeftCor and self.x() <= b.RightCor+3):
-                    if ((self.y() >= b.TopCor and self.y() <= b.BotCor) or (self.y() + 50 >= b.TopCor and self.y() + 50 <= b.BotCor) or (self.y() < b.TopCor and self.y() + 50 > b.BotCor)):
-                        dx -= 0
-                        canMove = False
-
-            for enemy in enemies:
-                if (self.x() >= enemy[0].x() and self.x() <= enemy[0].x()+53):
-                    if ((self.y() >= enemy[0].y() and self.y() <= enemy[0].y()+50) or (self.y() + 50 >= enemy[0].y() and self.y() + 50 <= enemy[0].y()+50)):
-                        dx -= 0
-                        canMove = False
-
-            if (self.x() >= playerPositions[0][0] and self.x() <= playerPositions[0][0] + 53):
-                if ((self.y() >= playerPositions[0][1] and self.y() <= playerPositions[0][1] + 50) or (self.y() + 50 >= playerPositions[0][1] and self.y() + 50 <= playerPositions[0][1] + 50)):
-                    dx -= 0
-                    canMove = False
-
-            if self.x() <= 0 :
-                dx -= 0
-            elif(canMove):
-                dx -= PLAYER_SPEED2
-            self.setimage2("Image/tank2Left")
-        elif Qt.Key_D in keys_pressed:
-            for b in niz:
-                if (self.x() + 50 >= b.LeftCor-3 and self.x()+ 50 <= b.RightCor):
-                    if ((self.y() >= b.TopCor and self.y() <= b.BotCor) or (self.y() + 50 >= b.TopCor and self.y() + 50 <= b.BotCor) or (self.y() < b.TopCor and self.y() + 50 > b.BotCor)):
-                        dx -= 0
-                        canMove = False
-
-            for enemy in enemies:
-                if (self.x() + 50 >= enemy[0].x()-3 and self.x()+ 50 <= enemy[0].x()+50):
-                    if ((self.y() >= enemy[0].y() and self.y() <= enemy[0].y()+50) or (self.y() + 50 >= enemy[0].y() and self.y() + 50 <= enemy[0].y()+50)):
-                        dx -= 0
-                        canMove = False
-
-            if (self.x() + 50 >= playerPositions[0][0]-3 and self.x() + 50 <= playerPositions[0][0] + 50):
-                if ((self.y() >= playerPositions[0][1] and self.y() <= playerPositions[0][1] + 50) or (self.y() + 50 >= playerPositions[0][1] and self.y() + 50 <= playerPositions[0][1] + 50)):
-                    dx -= 0
-                    canMove = False
-
-            if self.x() >= 942:
-                dx -= 0
-            elif(canMove):
-                dx += PLAYER_SPEED2
-            self.setimage2("Image/tank2Right")
-        elif Qt.Key_W in keys_pressed:
-            for b in niz:
-                if (self.y() <= b.BotCor+3 and self.y() >= b.TopCor):
-                    if ((self.x() >= b.LeftCor and self.x() <= b.RightCor) or ( self.x() + 50 >= b.LeftCor and self.x() + 50 <= b.RightCor) or (self.x() < b.LeftCor and self.x() + 50 > b.RightCor)):
-                        dy -= 0
-                        canMove = False
-
-            for enemy in enemies:
-                if (self.y() <= enemy[0].y()+53 and self.y() >= enemy[0].y()):
-                    if ((self.x() >= enemy[0].x() and self.x() <= enemy[0].x()+50) or ( self.x() + 50 >= enemy[0].x() and self.x() + 50 <= enemy[0].x()+50)):
-                        dy -= 0
-                        canMove = False
-
-            if (self.y() <= playerPositions[0][1] + 53 and self.y() >= playerPositions[0][1]):
-                if ((self.x() >= playerPositions[0][0] and self.x() <= playerPositions[0][0] + 50) or (self.x() + 50 >= playerPositions[0][0] and self.x() + 50 <= playerPositions[0][0] + 50)):
-                    dy -= 0
-                    canMove = False
-
-            if self.y() <= 0:
-                dy -= 0
-            elif(canMove):
-                dy -= PLAYER_SPEED2
-            self.setimage2("Image/tank2Top")
-        elif Qt.Key_S in keys_pressed:
-            for b in niz:
-                if (self.y() + 50 <= b.BotCor and self.y() + 50 >= b.TopCor-3):
-                    if ((self.x() >= b.LeftCor and self.x() <= b.RightCor) or ( self.x() + 50 >= b.LeftCor and self.x() + 50 <= b.RightCor) or (self.x() < b.LeftCor and self.x() + 50 > b.RightCor)):
-                        dy -= 0
-                        canMove = False
-
-            for enemy in enemies:
-                if (self.y() + 50 <= enemy[0].y()+50 and self.y() + 50 >= enemy[0].y()-3):
-                    if ((self.x() >= enemy[0].x() and self.x() <= enemy[0].x()+50) or ( self.x() + 50 >= enemy[0].x() and self.x() + 50 <= enemy[0].x()+50)):
-                        dy -= 0
-                        canMove = False
-
-            if (self.y() + 50 <= playerPositions[0][1] + 50 and self.y() + 50 >= playerPositions[0][1]-3):
-                if ((self.x() >= playerPositions[0][0] and self.x() <= playerPositions[0][0] + 50) or (self.x() + 50 >= playerPositions[0][0] and self.x() + 50 <= playerPositions[0][0] + 50)):
-                    dy -= 0
-                    canMove = False
-
-            if self.y() >= 746:
-                dy -= 0
-            elif(canMove):
-                dy += PLAYER_SPEED2
-            self.setimage2("Image/tank2Bottom")
-        playerPositions[1] = (self.x() + dx, self.y() + dy)
-        self.setPos(self.x()+dx, self.y()+dy)
-
-    def setimage(self, image):
-        self.image = image
-        self.setPixmap(QPixmap(image))
-
-    def getimage(self):
-        return self.image
-
-    def setimage2(self, image2):
-        self.image2 = image2
-        self.setPixmap(QPixmap(image2))
-
-    def getimage2(self):
-        return self.image2
-
-class Enemy(QGraphicsPixmapItem):
-    def __init__(self, image, parent = None):
-        QGraphicsPixmapItem.__init__(self,parent)
-        self.setPixmap(QPixmap(image))
-        self.rand = 3
-        self.isAlive = True
-        self.timerEnemy = QTimer()
-        self.timerEnemy.timeout.connect(self.enemyBulletTemp)
-        self.enemyBulletFlag = False
-        self.timerEnemyMove = QTimer()
-        self.timerEnemyMove.timeout.connect(self.enemyMoveTemp)
-        self.enemyMoveFlag = False
-
-    def enemyMoveTemp(self):
-        self.enemyMoveFlag = True
-
-    def enemyBulletTemp(self):
-        self.enemyBulletFlag = True
-
-
-    def gameUpdate(self):
-        dx = 0
-        dy = 0
-        canMove = True
-        if(self.enemyMoveFlag is True):
-            self.rand = randint(0,3)
-            self.enemyMoveFlag = False
-        if(self.rand == 0):
-            for b in niz:
-                if (self.x() >= b.LeftCor and self.x() <= b.RightCor+3):
-                    if ((self.y() >= b.TopCor and self.y() <= b.BotCor) or (self.y() + 50 >= b.TopCor and self.y() + 50 <= b.BotCor) or (self.y() < b.TopCor and self.y() + 50 > b.BotCor)):
-                        dx -= 0
-                        canMove = False
-
-
-            for enemy in enemies:
-                if(self.x() != enemy[0].x() and self.x() != enemy[0].y()):
-                    if (self.x() >= enemy[0].x() and self.x() <= enemy[0].x() + 53):
-                        if ((self.y() >= enemy[0].y() and self.y() <= enemy[0].y()+50) or (self.y() + 50 >= enemy[0].y() and self.y() + 50 <= enemy[0].y()+50)):
-                            dx -= 0
-                            canMove = False
-
-            if (self.x() >= playerPositions[0][0] and self.x() <= playerPositions[0][0] + 53):
-                if ((self.y() >= playerPositions[0][1] and self.y() <= playerPositions[0][1] + 50) or (self.y() + 50 >= playerPositions[0][1] and self.y() + 50 <= playerPositions[0][1] + 50)):
-                    dx -= 0
-                    canMove = False
-
-            if (self.x() >= playerPositions[1][0] and self.x() <= playerPositions[1][0] + 53):
-                if ((self.y() >= playerPositions[1][1] and self.y() <= playerPositions[1][1] + 50) or (self.y() + 50 >= playerPositions[1][1] and self.y() + 50 <= playerPositions[1][1] + 50)):
-                    dx -= 0
-                    canMove = False
-
-
-            if self.x() <= 0:
-                dx -= 0
-            elif (canMove):
-                dx -= ENEMY_SPEED
-            self.setimage("Image/enemyTankLeft")
-            self.setPos(self.x() + dx, self.y() + dy)
-        if (self.rand == 1):
-            for b in niz:
-                if (self.y() <= b.BotCor+3 and self.y() >= b.TopCor):
-                    if ((self.x() >= b.LeftCor and self.x() <= b.RightCor) or ( self.x() + 50 >= b.LeftCor and self.x() + 50 <= b.RightCor) or (self.x() < b.LeftCor and self.x() + 50 > b.RightCor)):
-                        dy -= 0
-                        canMove = False
-
-            for enemy in enemies:
-                if (self.x() != enemy[0].x() and self.x() != enemy[0].y()):
-                    if (self.y() <= enemy[0].y()+53 and self.y() >= enemy[0].y()):
-                        if ((self.x() >= enemy[0].x() and self.x() <= enemy[0].x()+50) or ( self.x() + 50 >= enemy[0].x() and self.x() + 50 <= enemy[0].x()+50)):
-                            dy -= 0
-                            canMove = False
-
-            if (self.y() <= playerPositions[0][1]+53 and self.y() >= playerPositions[0][1]):
-                        if ((self.x() >= playerPositions[0][0] and self.x() <= playerPositions[0][0]+50) or ( self.x() + 50 >= playerPositions[0][0] and self.x() + 50 <= playerPositions[0][0]+50)):
-                            dy -= 0
-                            canMove = False
-
-            if (self.y() <= playerPositions[1][1]+53 and self.y() >= playerPositions[1][1]):
-                        if ((self.x() >= playerPositions[1][0] and self.x() <= playerPositions[1][0]+50) or ( self.x() + 50 >= playerPositions[1][0] and self.x() + 50 <= playerPositions[1][0]+50)):
-                            dy -= 0
-                            canMove = False
-
-            if self.y() <= 0:
-                dy -= 0
-            elif(canMove):
-                dy -= ENEMY_SPEED
-            self.setimage("Image/enemyTankTop")
-            self.setPos(self.x() + dx, self.y() + dy)
-        if (self.rand == 2):
-            for b in niz:
-                if (self.x() + 50 >= b.LeftCor-3 and self.x()+ 50 <= b.RightCor):
-                    if ((self.y() >= b.TopCor and self.y() <= b.BotCor) or (self.y() + 50 >= b.TopCor and self.y() + 50 <= b.BotCor) or (self.y() < b.TopCor and self.y() + 50 > b.BotCor)):
-                        dx -= 0
-                        canMove = False
-
-            for enemy in enemies:
-                if (self.x() != enemy[0].x() and self.x() != enemy[0].y()):
-                    if (self.x() + 50 >= enemy[0].x()-3 and self.x() + 50 <= enemy[0].x()+50):
-                        if ((self.y() >= enemy[0].y() and self.y() <= enemy[0].y()+50) or (self.y() + 50 >= enemy[0].y() and self.y() + 50 <= enemy[0].y()+50)):
-                            dx -= 0
-                            canMove = False
-
-            if (self.x() + 50 >= playerPositions[0][0]-3 and self.x() + 50 <= playerPositions[0][0] + 50):
-                if ((self.y() >= playerPositions[0][1] and self.y() <= playerPositions[0][1] + 50) or (self.y() + 50 >= playerPositions[0][1] and self.y() + 50 <= playerPositions[0][1] + 50)):
-                    dx -= 0
-                    canMove = False
-
-            if (self.x() + 50 >= playerPositions[1][0]-3 and self.x() + 50 <= playerPositions[1][0] + 50):
-                if ((self.y() >= playerPositions[1][1] and self.y() <= playerPositions[1][1] + 50) or (self.y() + 50 >= playerPositions[1][1] and self.y() + 50 <= playerPositions[1][1] + 50)):
-                    dx -= 0
-                    canMove = False
-
-            if self.x() >= 942:
-                dx -= 0
-            elif(canMove):
-                dx += ENEMY_SPEED
-            self.setimage("Image/enemyTankRight")
-            self.setPos(self.x() + dx, self.y() + dy)
-        if (self.rand == 3):
-            for b in niz:
-                if (self.y() + 50 <= b.BotCor and self.y() + 50 >= b.TopCor-3):
-                    if ((self.x() >= b.LeftCor and self.x() <= b.RightCor) or ( self.x() + 50 >= b.LeftCor and self.x() + 50 <= b.RightCor) or (self.x() < b.LeftCor and self.x() + 50 > b.RightCor)):
-                        dy -= 0
-                        canMove = False
-
-            for enemy in enemies:
-                if (self.x() != enemy[0].x() and self.x() != enemy[0].y()):
-                    if (self.y() + 50 <= enemy[0].y()+50 and self.y() + 50 >= enemy[0].y()-3):
-                        if ((self.x() >= enemy[0].x() and self.x() <= enemy[0].x()+50) or (self.x() + 50 >= enemy[0].x() and self.x() + 50 <= enemy[0].x()+50)):
-                            dy -= 0
-                            canMove = False
-
-            if (self.y() + 50 <= playerPositions[0][1] + 50 and self.y() + 50 >= playerPositions[0][1]-3):
-                if ((self.x() >= playerPositions[0][0] and self.x() <= playerPositions[0][0] + 50) or (self.x() + 50 >= playerPositions[0][0] and self.x() + 50 <= playerPositions[0][0] + 50)):
-                    dy -= 0
-                    canMove = False
-
-            if (self.y() + 50 <= playerPositions[1][1] + 50 and self.y() + 50 >= playerPositions[1][1]-3):
-                if ((self.x() >= playerPositions[1][0] and self.x() <= playerPositions[1][0] + 50) or (self.x() + 50 >= playerPositions[1][0] and self.x() + 50 <= playerPositions[1][0] + 50)):
-                    dy -= 0
-                    canMove = False
-
-            if self.y() >= 746:
-                dy -= 0
-            elif(canMove):
-                dy += ENEMY_SPEED
-            self.setimage("Image/enemyTankBottom")
-            self.setPos(self.x() + dx, self.y() + dy)
-        enemyPositions[0] = ((self.x()+dx , self.y()+dy))
-
-    def setimage(self, image):
-        self.image = image
-        self.setPixmap(QPixmap(image))
-
-    def getimage(self):
-        return self.image
-
-class Bullet(QGraphicsPixmapItem):
-    def __init__(self, offset_x, offset_y, parent = None):
-        QGraphicsPixmapItem.__init__(self,parent)
-        self.imageBullet = "Image/bulet"
-        self.imageBullet2 = "Image/bulet"
-        self.imageBullet3 = "Image/bulet"
-        self.setPixmap(QPixmap(self.imageBullet))
-        self.offset_x = offset_x
-        self.offset_y = offset_y
-        self.active = False
-        self.active2 = False
-        self.active3 = False
-        self.frames = 0
-        self.frames2 = 0
-        self.frames3 = 0
-        self.bulletDirection = 0
-        self.bulletDirection2 = 0
-        self.bulletDirection3 = 0
-
-    def setBulletImage(self, image):
-        self.imageBullet = image
-        self.setPixmap(QPixmap(self.imageBullet))
-
-    def setBulletImage2(self, image):
-        self.imageBullet2 = image
-        self.setPixmap(QPixmap(self.imageBullet2))
-
-    def setBulletImage3(self, image):
-        self.imageBullet3 = image
-        self.setPixmap(QPixmap(self.imageBullet3))
-
-    def game_update(self, keys_pressed, player):
-        if not self.active:
-            if (Qt.Key_Space in keys_pressed and player.lifes > 0):
-                if player.getimage() == "Image/tankTop":
-                    self.setBulletImage("Image/bulet")
-                    self.bulletDirection = 0
-                    self.setPos(player.x() + self.offset_x, player.y() + self.offset_y)
-                elif player.getimage() == "Image/tankRight":
-                    self.setBulletImage("Image/buletHorizontal")
-                    self.bulletDirection = 1
-                    self.setPos(player.x() + self.offset_x, player.y() + self.offset_y+8)
-                elif player.getimage() == "Image/tankBottom":
-                    self.setBulletImage("Image/bulet")
-                    self.bulletDirection = 2
-                    self.setPos(player.x() + self.offset_x, player.y() + self.offset_y)
-                elif player.getimage() == "Image/tankLeft":
-                    self.setBulletImage("Image/buletHorizontal")
-                    self.bulletDirection = 3
-                    self.setPos(player.x() + self.offset_x, player.y() + self.offset_y+8)
-
-                self.active = True
-                self.frames = BULLET_FRAMES
-
-        else:
-            if self.bulletDirection == 0:
-                self.setPos(self.x(),self.y()-BULLET_SPEED)
-            elif self.bulletDirection == 2:
-                self.setPos(self.x(), self.y() + BULLET_SPEED)
-            elif self.bulletDirection == 1:
-                self.setPos(self.x() + BULLET_SPEED, self.y())
-            elif self.bulletDirection == 3:
-                self.setPos(self.x() - BULLET_SPEED, self.y())
-            self.frames -= 1
-            if self.frames <= 0:
-                self.active = False
-                self.setPos(SCREEN_WIDTH,SCREEN_HEIGHT)
-
-    def game_update2(self, keys_pressed, player):
-        if not self.active2:
-            if (Qt.Key_Control in keys_pressed and player.lifes > 0):
-                if player.getimage2() == "Image/tank2Top":
-                    self.setBulletImage2("Image/bulet")
-                    self.bulletDirection2 = 0
-                    self.setPos(player.x() + self.offset_x, player.y() + self.offset_y)
-                elif player.getimage2() == "Image/tank2Right":
-                    self.setBulletImage2("Image/buletHorizontal")
-                    self.bulletDirection2 = 1
-                    self.setPos(player.x() + self.offset_x, player.y() + self.offset_y+9)
-                elif player.getimage2() == "Image/tank2Bottom":
-                    self.setBulletImage2("Image/bulet")
-                    self.bulletDirection2 = 2
-                    self.setPos(player.x() + self.offset_x, player.y() + self.offset_y)
-                elif player.getimage2() == "Image/tank2Left":
-                    self.setBulletImage2("Image/buletHorizontal")
-                    self.bulletDirection2 = 3
-                    self.setPos(player.x() + self.offset_x, player.y() + self.offset_y+9)
-
-                self.active2 = True
-                self.frames2 = BULLET_FRAMES
-
-        else:
-            if self.bulletDirection2 == 0:
-                self.setPos(self.x(),self.y()-BULLET_SPEED)
-            elif self.bulletDirection2 == 2:
-                self.setPos(self.x(), self.y() + BULLET_SPEED)
-            elif self.bulletDirection2 == 1:
-                self.setPos(self.x() + BULLET_SPEED, self.y())
-            elif self.bulletDirection2 == 3:
-                self.setPos(self.x() - BULLET_SPEED, self.y())
-            self.frames2 -= 1
-            if self.frames2 <= 0:
-                self.active2 = False
-                self.setPos(SCREEN_WIDTH,SCREEN_HEIGHT)
-
-    def game_update3(self, player, isGameOver):
-            if not self.active3:
-                 if (True and isGameOver is False and player.enemyBulletFlag is True and player.isAlive is True):
-                    player.enemyBulletFlag = False
-                    if player.getimage() == "Image/enemyTankTop":
-                        self.setBulletImage3("Image/bulet")
-                        self.bulletDirection3 = 0
-                        self.setPos(player.x() + self.offset_x, player.y() + self.offset_y)
-                    elif player.getimage() == "Image/enemyTankRight":
-                        self.setBulletImage3("Image/buletHorizontal")
-                        self.bulletDirection3= 1
-                        self.setPos(player.x() + self.offset_x, player.y() + self.offset_y + 9)
-                    elif player.getimage() == "Image/enemyTankBottom":
-                        self.setBulletImage3("Image/bulet")
-                        self.bulletDirection3 = 2
-                        self.setPos(player.x() + self.offset_x, player.y() + self.offset_y)
-                    elif player.getimage() == "Image/enemyTankLeft":
-                        self.setBulletImage3("Image/buletHorizontal")
-                        self.bulletDirection3 = 3
-                        self.setPos(player.x() + self.offset_x, player.y() + self.offset_y + 9)
-
-                    self.active3 = True
-                    self.frames3 = BULLET_FRAMES
-
-            else:
-                if self.bulletDirection3 == 0:
-                    self.setPos(self.x(), self.y() - ENEMY_BULLET_SPEED)
-                elif self.bulletDirection3 == 2:
-                    self.setPos(self.x(), self.y() + ENEMY_BULLET_SPEED)
-                elif self.bulletDirection3 == 1:
-                    self.setPos(self.x() + ENEMY_BULLET_SPEED, self.y())
-                elif self.bulletDirection3 == 3:
-                    self.setPos(self.x() - ENEMY_BULLET_SPEED, self.y())
-                self.frames3 -= 1
-                if self.frames3 <= 0:
-                    self.active3 = False
-                    self.setPos(SCREEN_WIDTH, SCREEN_HEIGHT)
-
-
-class Brick(QGraphicsPixmapItem):
-    def __init__(self, image, parent = None):
-        QGraphicsPixmapItem.__init__(self,parent)
-        self.setPixmap(QPixmap(image))
-        self.LeftCor = 0
-        self.RightCor = 0
-        self.TopCor = 0
-        self.BotCor = 0
-        self.isEagel = False
-
-class Eagle(QGraphicsPixmapItem):
-    def __init__(self, image, parent = None):
-        QGraphicsPixmapItem.__init__(self,parent)
-        self.setPixmap(QPixmap(image))
-        self.LeftCor = 0
-        self.RightCor = 0
-        self.TopCor = 0
-        self.BotCor = 0
-        self.isEagel = True
-
-class PowerUp(QGraphicsPixmapItem):
-    def __init__(self, image, parent = None):
-        QGraphicsPixmapItem.__init__(self, parent)
-        self.setPixmap(QPixmap(image))
 
 
 
@@ -604,6 +34,11 @@ class Scene(QGraphicsScene):
         result = pool.apply_async(loadMap, ())
         maps = result.get(timeout=1)
         pool.close()
+
+        self.enemySpeedScene = 2
+        self.enemyBulletSpeed = 10
+        self.minEnemyBulletTimer = 3000
+        self.maxEnemyBulletTimer = 6000
 
         self.temp = []
 
@@ -751,18 +186,18 @@ class Scene(QGraphicsScene):
         self.threadFinished = False
 
         self.view = QGraphicsView(self)
+
         self.view.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.view.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.view.show()
         self.view.setFixedSize(SCREEN_WIDTH,SCREEN_HEIGHT)
         self.setSceneRect(0 ,0,SCREEN_WIDTH,SCREEN_HEIGHT)
         self.view.setWindowTitle("Battle City")
-
+        self.view.setGeometry(400,150,0,0)
 
 
 
     def enemyNumberCalculate(self):
-        print(str(len(self.temp)))
         x = 350
         z = self.enemyCount
         for i in range(0,6):
@@ -786,6 +221,8 @@ class Scene(QGraphicsScene):
         global enemyTankNumber
         self.t = Enemy("Image/enemyTankTop")
         self.t.setPos(enemyTankNumber*120, 1)
+        self.t.enemySpeed = self.enemySpeedScene
+        self.t.bulletSpeed = self.enemyBulletSpeed
         self.addItem(self.t)
         self.isGameOver = False
 
@@ -793,7 +230,7 @@ class Scene(QGraphicsScene):
         self.enemyBullet.setPos(-1, -1)
         self.addItem(self.enemyBullet)
 
-        self.t.timerEnemy.start(randint(MIN_ENEMY_BULLET_TIMER,MAX_ENEMY_BULLET_TIMER))
+        self.t.timerEnemy.start(randint(self.minEnemyBulletTimer,self.maxEnemyBulletTimer))
         self.t.timerEnemyMove.start(randint(2000,5000))
         enemies.append((self.t, self.enemyBullet))
 
@@ -813,8 +250,6 @@ class Scene(QGraphicsScene):
         self.update()
 
     def game_update(self):
-        global PLAYER_SPEED
-        global PLAYER_SPEED2
         if(len(enemies) == 0):
             self.timer.stop()
             self.powerUpQTimer.stop()
@@ -914,7 +349,7 @@ class Scene(QGraphicsScene):
             #Player 1
             if (enemy[1].x() <= self.player1.x()+50 and enemy[1].x() >= self.player1.x() and enemy[1].y() <= self.player1.y()+50 and enemy[1].y() >= self.player1.y() and enemy[0].isAlive is True and self.player1.lifes > 0):
                 self.player1.lifes = self.player1.lifes - 1
-                PLAYER_SPEED = 3
+                self.player1.playerSpeed = 3
                 self.p1.setPixmap(QPixmap("Image/P1"))
 
                 enemy[1].setPos(-5, -5)
@@ -938,7 +373,7 @@ class Scene(QGraphicsScene):
             #Player2
             if (enemy[1].x() <= self.player2.x()+50 and enemy[1].x() >= self.player2.x() and enemy[1].y() <= self.player2.y()+50 and enemy[1].y() >= self.player2.y() and enemy[0].isAlive is True and self.player2.lifes > 0):
                 self.player2.lifes = self.player2.lifes - 1
-                PLAYER_SPEED2 = 3
+                self.player2.playerSpeed2 = 3
                 self.p2.setPixmap(QPixmap("Image/P2"))
 
                 enemy[1].setPos(-5, -5)
@@ -964,7 +399,6 @@ class Scene(QGraphicsScene):
         #Player 1 killing enemy
         for enemyPlayer1 in enemies:
             if (self.bullet.x() <= enemyPlayer1[0].x()+50 and self.bullet.x() >= enemyPlayer1[0].x() and self.bullet.y() <= enemyPlayer1[0].y()+50 and self.bullet.y() >= enemyPlayer1[0].y() and enemyPlayer1[0].isAlive is True):
-                print("Uleti")
                 self.player1.score = self.player1.score + 100
                 self.player1ScoreLabel.setText("P1 : " + str(self.player1.score))
                 self.removeItem(enemyPlayer1[0])
@@ -983,7 +417,6 @@ class Scene(QGraphicsScene):
                     if(self.enemyCount <= 24):
                         self.removeItem(self.temp[-1])
                         self.temp.remove(self.temp[-1])
-                    print("Ispis  unutar pucanja" + str(len(self.temp)))
 
 
         #Player1 picks power up
@@ -1002,11 +435,11 @@ class Scene(QGraphicsScene):
             if (self.powerUpName == "Image/slow"):
                 tempRand = randint(0,1)
                 if(tempRand == 0):
-                    PLAYER_SPEED = 2
+                    self.player1.playerSpeed = 2
                     self.p1.setPixmap(QPixmap("Image/P1slow"))
                 else:
-                    PLAYER_SPEED = 4
-                    self.p1.setPixmap(QPixmap("Image/P1slow"))
+                    self.player1.playerSpeed = 4
+                    self.p1.setPixmap(QPixmap("Image/P1_fire"))
 
         #Player2 picks power up
         if ((self.player2.x() <= self.powerUpImage.x() + 50 and self.player2.x() >= self.powerUpImage.x() or self.player2.x() + 50 <= self.powerUpImage.x() + 50 and self.player2.x() + 50 >= self.powerUpImage.x()) and (self.player2.y() >= self.powerUpImage.y() and self.player2.y() <= self.powerUpImage.y() + 50 or self.player2.y() + 50 >= self.powerUpImage.y() and self.player2.y() + 50 <= self.powerUpImage.y() + 50)):
@@ -1024,11 +457,11 @@ class Scene(QGraphicsScene):
             if (self.powerUpName == "Image/slow"):
                 tempRand2 = randint(0, 1)
                 if(tempRand2 == 0):
-                    PLAYER_SPEED2 = 2
+                    self.player2.playerSpeed2 = 2
                     self.p2.setPixmap(QPixmap("Image/P2 slow"))
                 else:
-                    PLAYER_SPEED2 = 4
-                    self.p2.setPixmap(QPixmap("Image/P2 slow"))
+                    self.player2.playerSpeed2 = 4
+                    self.p2.setPixmap(QPixmap("Image/P2_fire"))
 
         # Player 2 killing enemy
         for enemyPlayer2 in enemies:
@@ -1091,20 +524,14 @@ class Scene(QGraphicsScene):
 
         self.powerUpQTimer.start(5000)
 
-        global ENEMY_SPEED
         global ENEMY_NUMBER
-        global PLAYER_SPEED
-        global PLAYER_SPEED2
-        global MIN_ENEMY_BULLET_TIMER
-        global MAX_ENEMY_BULLET_TIMER
-        global ENEMY_BULLET_SPEED
-        ENEMY_BULLET_SPEED = ENEMY_BULLET_SPEED + 0.5
-        if(MIN_ENEMY_BULLET_TIMER > 1000 and MAX_ENEMY_BULLET_TIMER >1500):
-            MIN_ENEMY_BULLET_TIMER = MIN_ENEMY_BULLET_TIMER - 150
-            MAX_ENEMY_BULLET_TIMER = MAX_ENEMY_BULLET_TIMER - 150
-        PLAYER_SPEED = 3
-        PLAYER_SPEED2 = 3
-        ENEMY_SPEED = ENEMY_SPEED + 0.5
+        self.enemySpeedScene = self.enemySpeedScene + 0.5
+        self.enemyBulletSpeed = self.enemyBulletSpeed + 1
+        if(self.minEnemyBulletTimer > 1000 and self.maxEnemyBulletTimer >1500):
+            self.minEnemyBulletTimer = self.minEnemyBulletTimer - 200
+            self.maxEnemyBulletTimer = self.maxEnemyBulletTimer - 200
+        self.player1.playerSpeed = 3
+        self.player2.playerSpeed2 = 3
         ENEMY_NUMBER = ENEMY_NUMBER + 2
 
         self.temp = []
@@ -1255,13 +682,10 @@ class Scene(QGraphicsScene):
         self.enemyBullet.active3 = False
         self.removeItem(self.bullet)
         self.bullet.active = False
-        self.player1.lifes = 0
         self.removeItem(self.bullet2)
         self.bullet2.active2 = False
-        self.player2.lifes = 0
 
 
-        #Pokusaj
         self.winnerFont = QFont()
         self.winnerFont.setPixelSize(35)
         self.winnerFont.setBold(1)
@@ -1272,15 +696,22 @@ class Scene(QGraphicsScene):
         self.winner.setFont(self.winnerFont)
 
 
-        if(self.player1.score > self.player2.score):
-            self.winner.setText("PLAYER 1 WINS")
-        elif(self.player2.score > self.player1.score):
-            self.winner.setText("PLAYER 2 WINS")
-        else:
-            self.winner.setPos(450, 600)
-            self.winner.setText("TIE")
+        if(self.player1.lifes > 0 and self.player2.lifes > 0):
+            if(self.player1.score > self.player2.score):
+                self.winner.setText("PLAYER 1 WINS")
+            elif(self.player2.score > self.player1.score):
+                self.winner.setText("PLAYER 2 WINS")
+            else:
+                self.winner.setPos(590, 600)
+                self.winner.setText("TIE")
 
-        self.addItem(self.winner)
+            self.addItem(self.winner)
+        elif(self.player1.lifes > 0 and self.player2.lifes == 0):
+            self.winner.setText("PLAYER 1 WINS")
+            self.addItem(self.winner)
+        elif(self.player1.lifes == 0 and self.player2.lifes > 0):
+            self.winner.setText("PLAYER 2 WINS")
+            self.addItem(self.winner)
 
 
 def loadMap():
