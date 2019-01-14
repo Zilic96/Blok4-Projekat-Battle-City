@@ -16,12 +16,11 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Projekat/BattleCity.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="254">
-              <caret line="772" column="57" lean-forward="true" selection-start-line="772" selection-start-column="57" selection-end-line="772" selection-end-column="57" />
+            <state relative-caret-position="-596">
+              <caret line="1048" column="30" selection-start-line="1048" selection-start-column="9" selection-end-line="1048" selection-end-column="30" />
               <folding>
                 <element signature="e#1#11#0" expanded="true" />
                 <element signature="e#1817#13016#0" />
-                <element signature="e#13056#21583#0" />
                 <element signature="e#21624#28437#0" />
                 <element signature="e#28478#28736#0" />
                 <element signature="e#28776#29033#0" />
@@ -71,12 +70,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>bullets</find>
-      <find>level</find>
-      <find>gameLevel</find>
-      <find>game_update3</find>
-      <find>self.t</find>
-      <find>self.enemyBullet</find>
       <find>enemyBulletFlag</find>
       <find>timer</find>
       <find>enemyBulletTemp</find>
@@ -93,11 +86,20 @@
       <find>ENEMY_NUMBER</find>
       <find>enemyNumberCalculate</find>
       <find>print</find>
-      <find>newle</find>
       <find>-1</find>
       <find>niz</find>
       <find>maps</find>
       <find>player1.score)</find>
+      <find>enemies</find>
+      <find>level</find>
+      <find>newle</find>
+      <find>createEnemy</find>
+      <find>self.addItem(self.bullet</find>
+      <find>self.enemyCount</find>
+      <find>player 1 kill</find>
+      <find>QTimer</find>
+      <find>timer.start</find>
+      <find>player 1 killing enem</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -254,12 +256,11 @@
     <entry file="file://C:/Program Files/Python36/Lib/multiprocessing/pool.py" />
     <entry file="file://$PROJECT_DIR$/Projekat/BattleCity.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="254">
-          <caret line="772" column="57" lean-forward="true" selection-start-line="772" selection-start-column="57" selection-end-line="772" selection-end-column="57" />
+        <state relative-caret-position="-596">
+          <caret line="1048" column="30" selection-start-line="1048" selection-start-column="9" selection-end-line="1048" selection-end-column="30" />
           <folding>
             <element signature="e#1#11#0" expanded="true" />
             <element signature="e#1817#13016#0" />
-            <element signature="e#13056#21583#0" />
             <element signature="e#21624#28437#0" />
             <element signature="e#28478#28736#0" />
             <element signature="e#28776#29033#0" />
