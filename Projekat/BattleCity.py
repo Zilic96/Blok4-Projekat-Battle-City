@@ -1,49 +1,11 @@
 import sys
 
-import functools
-
 import multiprocessing
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from random import *
 import _thread
-"""class App(QMainWindow):
-    def __init__(self):
-        super().__init__()
-
-        self.initUI()
-
-    def initUI(self):
-        # Window size
-        self.setWindowTitle("Battle City")
-        self.setFixedSize(1200, 800)
-        # Image as background
-        startGameImage = QImage("Image/StartGame.png")
-        sStartGameImage = startGameImage.scaled(QSize(1200, 800))
-        palette = QPalette()
-        palette.setBrush(10, QBrush(sStartGameImage))
-        self.setPalette(palette)
-        # New Game Button
-        self.button = QPushButton('New Game', self)
-        self.button.resize(200, 60)
-        self.button.move(500, 540)
-        self.button.setStyleSheet("background-color: #BD4400")
-        self.button.clicked.connect(self.on_click)
-
-        self.show()
-
-    def on_click(self):
-        self.setWindowTitle("Battle City")
-        self.setFixedSize(1200, 800)
-
-        palette = QPalette()
-        palette.setBrush(10, Qt.black)
-        self.setPalette(palette)
-        self.button.deleteLater()
-
-        scene = Scene()
-"""
 
 
 #PODUPLATI METAK I NAPRAVITI PUCANJE LEVO/DESNO
@@ -55,12 +17,13 @@ ENEMY_SPEED             = 2
 PLAYER_BULLET_X_OFFSETS = 23
 PLAYER_BULLET_Y         = 15
 BULLET_SPEED            = 10  # pix/frame
+ENEMY_BULLET_SPEED      = 10  # pix/frame
 BULLET_FRAMES           = 110
 FRAME_TIME_MS           = 16  # ms/frame
-#ENEMY_BULLET_TIMER      = 25000
 MIN_ENEMY_BULLET_TIMER  = 3000
 MAX_ENEMY_BULLET_TIMER  = 6000
-ENEMY_NUMBER = 8
+ENEMY_NUMBER = 6
+
 playerPositions = [(0,0),(0,0)]
 enemyPositions = [(0,0)]
 
@@ -295,7 +258,6 @@ class Enemy(QGraphicsPixmapItem):
         QGraphicsPixmapItem.__init__(self,parent)
         self.setPixmap(QPixmap(image))
         self.rand = 3
-        #self.temp = 0
         self.isAlive = True
         self.timerEnemy = QTimer()
         self.timerEnemy.timeout.connect(self.enemyBulletTemp)
@@ -303,7 +265,6 @@ class Enemy(QGraphicsPixmapItem):
         self.timerEnemyMove = QTimer()
         self.timerEnemyMove.timeout.connect(self.enemyMoveTemp)
         self.enemyMoveFlag = False
-        #self.timerEnemy.start(ENEMY_BULLET_TIMER)
 
     def enemyMoveTemp(self):
         self.enemyMoveFlag = True
@@ -313,13 +274,11 @@ class Enemy(QGraphicsPixmapItem):
 
 
     def gameUpdate(self):
-        #self.temp = self.temp +1
         dx = 0
         dy = 0
         canMove = True
         if(self.enemyMoveFlag is True):
             self.rand = randint(0,3)
-            #self.temp = 0
             self.enemyMoveFlag = False
         if(self.rand == 0):
             for b in niz:
@@ -351,7 +310,6 @@ class Enemy(QGraphicsPixmapItem):
                 dx -= 0
             elif (canMove):
                 dx -= ENEMY_SPEED
-            #enemyPosition[1] = (self.x() + dx, self.y() + dy)
             self.setimage("Image/enemyTankLeft")
             self.setPos(self.x() + dx, self.y() + dy)
         if (self.rand == 1):
@@ -382,7 +340,6 @@ class Enemy(QGraphicsPixmapItem):
                 dy -= 0
             elif(canMove):
                 dy -= ENEMY_SPEED
-            # enemyPosition[1] = (self.x() + dx, self.y() + dy)
             self.setimage("Image/enemyTankTop")
             self.setPos(self.x() + dx, self.y() + dy)
         if (self.rand == 2):
@@ -413,7 +370,6 @@ class Enemy(QGraphicsPixmapItem):
                 dx -= 0
             elif(canMove):
                 dx += ENEMY_SPEED
-            # enemyPosition[1] = (self.x() + dx, self.y() + dy)
             self.setimage("Image/enemyTankRight")
             self.setPos(self.x() + dx, self.y() + dy)
         if (self.rand == 3):
@@ -444,7 +400,6 @@ class Enemy(QGraphicsPixmapItem):
                 dy -= 0
             elif(canMove):
                 dy += ENEMY_SPEED
-            # enemyPosition[1] = (self.x() + dx, self.y() + dy)
             self.setimage("Image/enemyTankBottom")
             self.setPos(self.x() + dx, self.y() + dy)
         enemyPositions[0] = ((self.x()+dx , self.y()+dy))
@@ -474,7 +429,6 @@ class Bullet(QGraphicsPixmapItem):
         self.bulletDirection = 0
         self.bulletDirection2 = 0
         self.bulletDirection3 = 0
-        #self.enemyBulletFlag = False
 
     def setBulletImage(self, image):
         self.imageBullet = image
@@ -588,13 +542,13 @@ class Bullet(QGraphicsPixmapItem):
 
             else:
                 if self.bulletDirection3 == 0:
-                    self.setPos(self.x(), self.y() - BULLET_SPEED)
+                    self.setPos(self.x(), self.y() - ENEMY_BULLET_SPEED)
                 elif self.bulletDirection3 == 2:
-                    self.setPos(self.x(), self.y() + BULLET_SPEED)
+                    self.setPos(self.x(), self.y() + ENEMY_BULLET_SPEED)
                 elif self.bulletDirection3 == 1:
-                    self.setPos(self.x() + BULLET_SPEED, self.y())
+                    self.setPos(self.x() + ENEMY_BULLET_SPEED, self.y())
                 elif self.bulletDirection3 == 3:
-                    self.setPos(self.x() - BULLET_SPEED, self.y())
+                    self.setPos(self.x() - ENEMY_BULLET_SPEED, self.y())
                 self.frames3 -= 1
                 if self.frames3 <= 0:
                     self.active3 = False
@@ -636,9 +590,6 @@ class Scene(QGraphicsScene):
         # hold the set of keys we're pressing
         self.keys_pressed = set()
 
-        # use a timer to get 60Hz refresh (hopefully)
-        #self.timer = QBasicTimer()
-        #self.timer.start(FRAME_TIME_MS, self)
         self.enemyCount = ENEMY_NUMBER - 6
 
         self.bg = QGraphicsRectItem()
@@ -649,16 +600,10 @@ class Scene(QGraphicsScene):
 
         self.powerUpTimer = 0
 
-        self.gameLevel = randint(0,2)
-        self.gamelevelString = "maps"+str(self.gameLevel)+".txt"
-        f = open(self.gamelevelString, 'r')
-        maps = [[int(num) for num in line.split(',')] for line in f]
-
-        """self.t = Enemy("Image/enemyTankTop")
-        self.t.setPos(1, 1)
-        self.addItem(self.t)
-        self.update()
-        self.isGameOver = False"""
+        pool = multiprocessing.Pool(processes=1)
+        result = pool.apply_async(loadMap, ())
+        maps = result.get(timeout=1)
+        pool.close()
 
         self.temp = []
 
@@ -671,7 +616,6 @@ class Scene(QGraphicsScene):
                     brick = Brick("Image/brick")
                     brick.setPos(col * 32, row * 32)
                     self.addItem(brick)
-                    #self.update()
                     brick.LeftCor = col * 32
                     brick.RightCor = col * 32 + 32
                     brick.TopCor = row * 32
@@ -683,7 +627,6 @@ class Scene(QGraphicsScene):
                     eagle = Eagle("Image/eagle")
                     eagle.setPos(col * 32, row * 32)
                     self.addItem(eagle)
-                    #self.update()
                     eagle.LeftCor = col * 32
                     eagle.RightCor = col * 32 + 96
                     eagle.TopCor = row * 32
@@ -784,29 +727,12 @@ class Scene(QGraphicsScene):
         self.player2ScoreLabel.setFont(self.player2ScoreFont)
         self.addItem(self.player2ScoreLabel)
 
-
-        """self.enemyNumberPic = QGraphicsPixmapItem()
-        self.enemyNumberPic.setPos(1020, 400)
-        self.enemyNumberPic.setPixmap(QPixmap("Image/enemyTankTop"))
-        self.addItem(self.enemyNumberPic)"""
-
-        """"""
-        # Timer for enemy bullet
-
-        """self.timerEnemy = QTimer()
-        self.timerEnemy.timeout.connect(self.enemyBulletTemp)
-        self.timerEnemy.start(ENEMY_BULLET_TIMER)"""
-        """"""
-
         self.enemyNumber = 6
 
-        #self.thread = QThread()
-        #self.moveToThread(self.thread)
         for i in range(0,6):
             self.createEnemy()
-            #self.thread.started.connect(self.createEnemy)
-        #self.thread.start()
 
+        # use a timer to get 60Hz refresh (hopefully)
         self.timer = QBasicTimer()
         self.timer.start(FRAME_TIME_MS, self)
 
@@ -823,7 +749,6 @@ class Scene(QGraphicsScene):
         while not self.threadFinished:
             continue
         self.threadFinished = False
-        #self.enemyNumberCalculate()
 
         self.view = QGraphicsView(self)
         self.view.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -837,8 +762,6 @@ class Scene(QGraphicsScene):
 
 
     def enemyNumberCalculate(self):
-        print("Uso u kalkulus")
-
         print(str(len(self.temp)))
         x = 350
         z = self.enemyCount
@@ -857,16 +780,13 @@ class Scene(QGraphicsScene):
 
                 z = z - 1
 
-        print(str(len(self.temp)))
         self.threadFinished = True
 
-    #@pyqtSlot()
     def createEnemy(self):
         global enemyTankNumber
         self.t = Enemy("Image/enemyTankTop")
         self.t.setPos(enemyTankNumber*120, 1)
         self.addItem(self.t)
-        #self.update()
         self.isGameOver = False
 
         self.enemyBullet = Bullet(PLAYER_BULLET_X_OFFSETS, PLAYER_BULLET_Y)
@@ -889,7 +809,6 @@ class Scene(QGraphicsScene):
 
     def timerEvent(self, event):
         self.powerUpTimer = self.powerUpTimer + 1
-        #print(self.powerUpTimer)
         self.game_update()
         self.update()
 
@@ -910,7 +829,7 @@ class Scene(QGraphicsScene):
                 self.removeItem(niz[-1])
                 niz.remove(niz[-1])
             self.newLevel()
-        #self.powerUpScene()
+
         #Player 1 killing bricks
         if (self.bullet.x() + 8 >= 985):
             self.removeItem(self.bullet)
@@ -974,7 +893,7 @@ class Scene(QGraphicsScene):
         if (self.bullet2.active2):
             self.addItem(self.bullet2)
 
-        # Enemy killing bricks
+        # Enemy bullet can't leave map
         for enemy in enemies:
             if (enemy[1].x() + 8 >= 985):
                 self.removeItem(enemy[1])
@@ -1068,7 +987,7 @@ class Scene(QGraphicsScene):
 
 
         #Player1 picks power up
-        if(self.player1.x() <= self.powerUpImage.x()+50 and self.player1.x() >= self.powerUpImage.x() and self.player1.y() >= self.powerUpImage.y() and self.player1.y() <= self.powerUpImage.y()+50 or (self.player1.x()+50 <= self.powerUpImage.x()+50 and self.player1.x()+50 >= self.powerUpImage.x() and self.player1.y()+50 >= self.powerUpImage.y() and self.player1.y()+50 <= self.powerUpImage.y()+50)):
+        if((self.player1.x() <= self.powerUpImage.x()+50 and self.player1.x() >= self.powerUpImage.x() or self.player1.x()+50 <= self.powerUpImage.x()+50 and self.player1.x()+50 >= self.powerUpImage.x()) and (self.player1.y() >= self.powerUpImage.y() and self.player1.y() <= self.powerUpImage.y()+50 or self.player1.y()+50 >= self.powerUpImage.y() and self.player1.y()+50 <= self.powerUpImage.y()+50)):
             self.removeItem(self.powerUpImage)
             self.powerUpImage.setPos(-50,-50)
             if(self.powerUpName == "Image/extraLife"):
@@ -1081,11 +1000,16 @@ class Scene(QGraphicsScene):
                     self.player1Lifes.setPixmap(QPixmap("Image/2lifes"))
 
             if (self.powerUpName == "Image/slow"):
-                PLAYER_SPEED = 2
-                self.p1.setPixmap(QPixmap("Image/P1slow"))
+                tempRand = randint(0,1)
+                if(tempRand == 0):
+                    PLAYER_SPEED = 2
+                    self.p1.setPixmap(QPixmap("Image/P1slow"))
+                else:
+                    PLAYER_SPEED = 4
+                    self.p1.setPixmap(QPixmap("Image/P1slow"))
 
         #Player2 picks power up
-        if (self.player2.x() <= self.powerUpImage.x() + 50 and self.player2.x() >= self.powerUpImage.x() and self.player2.y() >= self.powerUpImage.y() and self.player2.y() <= self.powerUpImage.y() + 50 or (self.player2.x() + 50 <= self.powerUpImage.x() + 50 and self.player2.x() + 50 >= self.powerUpImage.x() and self.player2.y() + 50 >= self.powerUpImage.y() and self.player2.y() + 50 <= self.powerUpImage.y() + 50)):
+        if ((self.player2.x() <= self.powerUpImage.x() + 50 and self.player2.x() >= self.powerUpImage.x() or self.player2.x() + 50 <= self.powerUpImage.x() + 50 and self.player2.x() + 50 >= self.powerUpImage.x()) and (self.player2.y() >= self.powerUpImage.y() and self.player2.y() <= self.powerUpImage.y() + 50 or self.player2.y() + 50 >= self.powerUpImage.y() and self.player2.y() + 50 <= self.powerUpImage.y() + 50)):
             self.removeItem(self.powerUpImage)
             self.powerUpImage.setPos(-50, -50)
             if (self.powerUpName == "Image/extraLife"):
@@ -1098,8 +1022,13 @@ class Scene(QGraphicsScene):
                     self.player2Lifes.setPixmap(QPixmap("Image/2lifes"))
 
             if (self.powerUpName == "Image/slow"):
-                PLAYER_SPEED2 = 2
-                self.p2.setPixmap(QPixmap("Image/P2 slow"))
+                tempRand2 = randint(0, 1)
+                if(tempRand2 == 0):
+                    PLAYER_SPEED2 = 2
+                    self.p2.setPixmap(QPixmap("Image/P2 slow"))
+                else:
+                    PLAYER_SPEED2 = 4
+                    self.p2.setPixmap(QPixmap("Image/P2 slow"))
 
         # Player 2 killing enemy
         for enemyPlayer2 in enemies:
@@ -1144,28 +1073,11 @@ class Scene(QGraphicsScene):
             enemy[1].game_update3(enemy[0], self.isGameOver)
             if (enemy[1].active3):
                 self.addItem(enemy[1])
-        #self.enemyBullet.game_update3(self.t, self.isGameOver)
-
-        #if (self.enemyBullet.active3):
-            #self.addItem(self.enemyBullet)
-
-    """def enemyBulletTemp(self):
-        for enemy in enemies:
-            enemy[1].enemyBulletFlag = True"""
 
     def powerUpScene(self):
-        print("DJOKARA FUKSA GLUPAVA")
-
-        #OVO PROMENITI NA FAXU OBAVEZNO
-        pool = multiprocessing.Pool(processes=1)
-        result = pool.apply_async(powerUp, (910, SCREEN_HEIGHT - 50))
-        self.cords = result.get(timeout=0.1)
-        pool.close()
-
-        #self.cords = [randint(0,910), randint(0,SCREEN_HEIGHT - 50), randint(0,1)]
+        self.cords = [randint(0,910), randint(0,SCREEN_HEIGHT - 50), randint(0,1)]
 
         self.powerUpImage.setPos(self.cords[0], self.cords[1])
-        #print(str(self.powerUpTimer))
         if (self.cords[2] == 0):
             self.powerUpName = "Image/extraLife"
             self.powerUpImage.setPixmap(QPixmap("Image/extraLife"))
@@ -1173,22 +1085,23 @@ class Scene(QGraphicsScene):
             self.powerUpName = "Image/slow"
             self.powerUpImage.setPixmap(QPixmap("Image/slow"))
         self.addItem(self.powerUpImage)
-        #self.powerUpQTimer.stop()
 
     def newLevel(self):
-        # self.timer = QBasicTimer()
         self.timer.start(FRAME_TIME_MS, self)
 
-        # PowerUp
-        # self.powerUpQTimer = QTimer()
-        #self.powerUpQTimer.timeout.connect(self.powerUpScene)
         self.powerUpQTimer.start(5000)
-        print("NOVI LEVEL")
 
         global ENEMY_SPEED
         global ENEMY_NUMBER
         global PLAYER_SPEED
         global PLAYER_SPEED2
+        global MIN_ENEMY_BULLET_TIMER
+        global MAX_ENEMY_BULLET_TIMER
+        global ENEMY_BULLET_SPEED
+        ENEMY_BULLET_SPEED = ENEMY_BULLET_SPEED + 0.5
+        if(MIN_ENEMY_BULLET_TIMER > 1000 and MAX_ENEMY_BULLET_TIMER >1500):
+            MIN_ENEMY_BULLET_TIMER = MIN_ENEMY_BULLET_TIMER - 150
+            MAX_ENEMY_BULLET_TIMER = MAX_ENEMY_BULLET_TIMER - 150
         PLAYER_SPEED = 3
         PLAYER_SPEED2 = 3
         ENEMY_SPEED = ENEMY_SPEED + 0.5
@@ -1206,16 +1119,10 @@ class Scene(QGraphicsScene):
 
         self.powerUpTimer = 0
 
-        self.gameLevel = randint(0, 2)
-        self.gamelevelString = "maps" + str(self.gameLevel) + ".txt"
-        f = open(self.gamelevelString, 'r')
-        maps = [[int(num) for num in line.split(',')] for line in f]
-
-        """self.t = Enemy("Image/enemyTankTop")
-        self.t.setPos(1, 1)
-        self.addItem(self.t)
-        self.update()
-        self.isGameOver = False"""
+        pool = multiprocessing.Pool(processes=1)
+        result = pool.apply_async(loadMap, ())
+        maps = result.get(timeout=1)
+        pool.close()
 
         row = 0
         col = 0
@@ -1249,121 +1156,84 @@ class Scene(QGraphicsScene):
                 col = col + 1
             row = row + 1
 
-        self.player1.setPos((SCREEN_WIDTH - self.player1.pixmap().width()) / 5,
-                            (SCREEN_HEIGHT - self.player1.pixmap().height()) / 1)
+        if(self.player1.lifes > 0):
+            self.player1.setPos((SCREEN_WIDTH - self.player1.pixmap().width()) / 5,
+                                (SCREEN_HEIGHT - self.player1.pixmap().height()) / 1)
+            self.bullet.setPos(-1, -1)
+            self.addItem(self.bullet)
+            self.addItem(self.player1)
 
-        self.player2.setPos((SCREEN_WIDTH - self.player2.pixmap().width()) / 3 * 2,
-                            (SCREEN_HEIGHT - self.player2.pixmap().height()) / 1)
+        if(self.player2.lifes > 0):
+            self.player2.setPos((SCREEN_WIDTH - self.player2.pixmap().width()) / 3 * 2,
+                                (SCREEN_HEIGHT - self.player2.pixmap().height()) / 1)
+            self.bullet2.setPos(-1, -1)
+            self.addItem(self.bullet2)
+            self.addItem(self.player2)
 
-        self.bullet.setPos(-1, -1)
-        self.addItem(self.bullet)
-
-        self.bullet2.setPos(-1, -1)
-        self.addItem(self.bullet2)
-
-        """"""
-
-        self.addItem(self.player1)
-        self.addItem(self.player2)
-
-        # Stat label
-        """self.label = QGraphicsRectItem()
-        self.label.setRect(992, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
-        self.label.setBrush(QBrush(Qt.gray))
-        self.addItem(self.label)
-
-        # Stats
-        self.p1 = QGraphicsPixmapItem()"""
         self.p1.setPos(1020, 50)
         self.p1.setPixmap(QPixmap("Image/P1"))
         self.addItem(self.p1)
-        #self.player1Lifes = QGraphicsPixmapItem()
         self.player1Lifes.setPos(1070, 50)
         if self.player1.lifes == 3:
             self.player1Lifes.setPixmap(QPixmap("Image/3lifes"))
+            self.addItem(self.player1Lifes)
         elif self.player1.lifes == 2:
             self.player1Lifes.setPixmap(QPixmap("Image/2lifes"))
+            self.addItem(self.player1Lifes)
         elif self.player1.lifes == 1:
             self.player1Lifes.setPixmap(QPixmap("Image/1life"))
-        self.addItem(self.player1Lifes)
+            self.addItem(self.player1Lifes)
 
-        #self.p2 = QGraphicsPixmapItem()
         self.p2.setPos(1020, 150)
         self.p2.setPixmap(QPixmap("Image/P2"))
         self.addItem(self.p2)
-        #self.player2Lifes = QGraphicsPixmapItem()
         self.player2Lifes.setPos(1070, 150)
         if self.player2.lifes == 3:
             self.player2Lifes.setPixmap(QPixmap("Image/3lifes"))
+            self.addItem(self.player2Lifes)
         elif self.player2.lifes == 2:
             self.player2Lifes.setPixmap(QPixmap("Image/2lifes"))
+            self.addItem(self.player2Lifes)
         elif self.player2.lifes == 1:
             self.player2Lifes.setPixmap(QPixmap("Image/1life"))
-        self.addItem(self.player2Lifes)
+            self.addItem(self.player2Lifes)
 
-        #self.levelFlag = QGraphicsPixmapItem()
         self.levelFlag.setPos(1020, 750)
         self.levelFlag.setPixmap(QPixmap("Image/levelFlag"))
         self.addItem(self.levelFlag)
 
-        #self.levelNumberFont = QFont()
         self.levelNumberFont.setPixelSize(25)
         self.levelNumberFont.setBold(1)
-        #self.levelNumber = QGraphicsSimpleTextItem()
         self.levelNumber.setText(str(self.level))
         self.levelNumber.setPos(1060, 755)
         self.levelNumber.setBrush(QBrush(Qt.black))
         self.levelNumber.setFont(self.levelNumberFont)
         self.addItem(self.levelNumber)
 
-        #self.player1ScoreFont = QFont()
         self.player1ScoreFont.setPixelSize(35)
         self.player1ScoreFont.setBold(1)
-        #self.player1ScoreLabel = QGraphicsSimpleTextItem()
         self.player1ScoreLabel.setText("P1 : " + str(self.player1.score))
         self.player1ScoreLabel.setPos(1020, 230)
         self.player1ScoreLabel.setBrush(QBrush(Qt.black))
         self.player1ScoreLabel.setFont(self.player1ScoreFont)
         self.addItem(self.player1ScoreLabel)
 
-        #self.player2ScoreFont = QFont()
         self.player2ScoreFont.setPixelSize(35)
         self.player2ScoreFont.setBold(1)
-        #self.player2ScoreLabel = QGraphicsSimpleTextItem()
         self.player2ScoreLabel.setText("P2 : " + str(self.player2.score))
         self.player2ScoreLabel.setPos(1020, 290)
         self.player2ScoreLabel.setBrush(QBrush(Qt.black))
         self.player2ScoreLabel.setFont(self.player2ScoreFont)
         self.addItem(self.player2ScoreLabel)
 
-        """self.enemyNumberPic = QGraphicsPixmapItem()
-        self.enemyNumberPic.setPos(1020, 400)
-        self.enemyNumberPic.setPixmap(QPixmap("Image/enemyTankTop"))
-        self.addItem(self.enemyNumberPic)"""
-
-        """"""
-        # Timer for enemy bullet
-
-        """self.timerEnemy = QTimer()
-        self.timerEnemy.timeout.connect(self.enemyBulletTemp)
-        self.timerEnemy.start(ENEMY_BULLET_TIMER)"""
-        """"""
-
         self.enemyNumber = 6
 
-        # self.thread = QThread()
-        # self.moveToThread(self.thread)
         for i in range(0, 6):
             self.createEnemy()
-            # self.thread.started.connect(self.createEnemy)
-        # self.thread.start()
-
-
 
         self.powerUpImage = QGraphicsPixmapItem()
         self.powerUpName = ""
 
-        #self.enemyNumberCalculate()
         self.threadFinished = False
         _thread.start_new_thread(self.enemyNumberCalculate, ())
         while not self.threadFinished:
@@ -1402,30 +1272,23 @@ class Scene(QGraphicsScene):
         self.winner.setFont(self.winnerFont)
 
 
-        #self.playerWinsPic = QGraphicsPixmapItem()
-        #self.playerWinsPic.setPos(450, 600)
         if(self.player1.score > self.player2.score):
-            #self.playerWinsPic.setPixmap(QPixmap("Image/player1Wins"))
             self.winner.setText("PLAYER 1 WINS")
         elif(self.player2.score > self.player1.score):
-            #self.playerWinsPic.setPixmap(QPixmap("Image/player2Wins"))
             self.winner.setText("PLAYER 2 WINS")
         else:
             self.winner.setPos(450, 600)
             self.winner.setText("TIE")
 
         self.addItem(self.winner)
-        #self.addItem(self.playerWinsPic)
 
 
-
-def powerUp(a, b):
-    x = randint(0,a)
-    y = randint(0,b)
-    z = randint(0,1)
-    cords = [x, y, z]
-    return cords
-
+def loadMap():
+    gameLevel = randint(0, 2)
+    gamelevelString = "maps" + str(gameLevel) + ".txt"
+    f = open(gamelevelString, 'r')
+    maps = [[int(num) for num in line.split(',')] for line in f]
+    return maps
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
