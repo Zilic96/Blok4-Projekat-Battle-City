@@ -51,7 +51,7 @@ SCREEN_WIDTH            = 1200
 SCREEN_HEIGHT           = 800
 PLAYER_SPEED            = 3   # pix/frame
 PLAYER_SPEED2            = 3   # pix/frame
-ENEMY_SPEED             = 5
+ENEMY_SPEED             = 2
 PLAYER_BULLET_X_OFFSETS = 23
 PLAYER_BULLET_Y         = 15
 BULLET_SPEED            = 10  # pix/frame
@@ -60,7 +60,7 @@ FRAME_TIME_MS           = 16  # ms/frame
 #ENEMY_BULLET_TIMER      = 25000
 MIN_ENEMY_BULLET_TIMER  = 3000
 MAX_ENEMY_BULLET_TIMER  = 6000
-ENEMY_NUMBER = 32
+ENEMY_NUMBER = 8
 playerPositions = [(0,0),(0,0)]
 enemyPositions = [(0,0)]
 
@@ -637,8 +637,8 @@ class Scene(QGraphicsScene):
         self.keys_pressed = set()
 
         # use a timer to get 60Hz refresh (hopefully)
-        self.timer = QBasicTimer()
-        self.timer.start(FRAME_TIME_MS, self)
+        #self.timer = QBasicTimer()
+        #self.timer.start(FRAME_TIME_MS, self)
         self.enemyCount = ENEMY_NUMBER - 6
 
         self.bg = QGraphicsRectItem()
@@ -671,7 +671,7 @@ class Scene(QGraphicsScene):
                     brick = Brick("Image/brick")
                     brick.setPos(col * 32, row * 32)
                     self.addItem(brick)
-                    self.update()
+                    #self.update()
                     brick.LeftCor = col * 32
                     brick.RightCor = col * 32 + 32
                     brick.TopCor = row * 32
@@ -683,7 +683,7 @@ class Scene(QGraphicsScene):
                     eagle = Eagle("Image/eagle")
                     eagle.setPos(col * 32, row * 32)
                     self.addItem(eagle)
-                    self.update()
+                    #self.update()
                     eagle.LeftCor = col * 32
                     eagle.RightCor = col * 32 + 96
                     eagle.TopCor = row * 32
@@ -778,7 +778,7 @@ class Scene(QGraphicsScene):
         self.player2ScoreFont.setPixelSize(35)
         self.player2ScoreFont.setBold(1)
         self.player2ScoreLabel = QGraphicsSimpleTextItem()
-        self.player2ScoreLabel.setText("P2 : " + str(self.player1.score))
+        self.player2ScoreLabel.setText("P2 : " + str(self.player2.score))
         self.player2ScoreLabel.setPos(1020, 290)
         self.player2ScoreLabel.setBrush(QBrush(Qt.black))
         self.player2ScoreLabel.setFont(self.player2ScoreFont)
@@ -806,6 +806,9 @@ class Scene(QGraphicsScene):
             self.createEnemy()
             #self.thread.started.connect(self.createEnemy)
         #self.thread.start()
+
+        self.timer = QBasicTimer()
+        self.timer.start(FRAME_TIME_MS, self)
 
         #PowerUp
         self.powerUpQTimer = QTimer()
@@ -894,6 +897,22 @@ class Scene(QGraphicsScene):
     def game_update(self):
         global PLAYER_SPEED
         global PLAYER_SPEED2
+        if(len(enemies) == 0):
+            self.timer.stop()
+            self.powerUpQTimer.stop()
+            self.removeItem(self.player1Lifes)
+            self.removeItem(self.player2Lifes)
+            self.removeItem(self.player1)
+            self.removeItem(self.bullet)
+            self.removeItem(self.player2)
+            self.removeItem(self.bullet2)
+            for i in range(0,len(niz)):
+                niz[-1].setPos(-50, -50)
+                self.removeItem(niz[-1])
+                niz.remove(niz[-1])
+
+
+            self.newLevel()
         #self.powerUpScene()
         #Player 1 killing bricks
         if (self.bullet.x() + 8 >= 985):
@@ -1154,6 +1173,193 @@ class Scene(QGraphicsScene):
             self.powerUpImage.setPixmap(QPixmap("Image/slow"))
         self.addItem(self.powerUpImage)
         #self.powerUpQTimer.stop()
+
+    def newLevel(self):
+        print("NOVI LEVEL")
+
+        global ENEMY_SPEED
+        global ENEMY_NUMBER
+        global PLAYER_SPEED
+        global PLAYER_SPEED2
+        PLAYER_SPEED = 3
+        PLAYER_SPEED2 = 3
+        ENEMY_SPEED = ENEMY_SPEED + 0.5
+        ENEMY_NUMBER = ENEMY_NUMBER + 2
+
+        self.enemyCount = ENEMY_NUMBER - 6
+
+        self.bg = QGraphicsRectItem()
+        self.bg.setRect(-1, -1, 992, SCREEN_HEIGHT)
+        self.bg.setBrush(QBrush(Qt.black))
+        self.addItem(self.bg)
+        self.level = self.level + 1
+
+        self.powerUpTimer = 0
+
+        self.gameLevel = randint(0, 2)
+        self.gamelevelString = "maps" + str(self.gameLevel) + ".txt"
+        f = open(self.gamelevelString, 'r')
+        maps = [[int(num) for num in line.split(',')] for line in f]
+
+        """self.t = Enemy("Image/enemyTankTop")
+        self.t.setPos(1, 1)
+        self.addItem(self.t)
+        self.update()
+        self.isGameOver = False"""
+
+        row = 0
+        col = 0
+        for i in maps:
+            col = 0
+            for j in i:
+                if (j == 1):
+                    brick = Brick("Image/brick")
+                    brick.setPos(col * 32, row * 32)
+                    self.addItem(brick)
+                    self.update()
+                    brick.LeftCor = col * 32
+                    brick.RightCor = col * 32 + 32
+                    brick.TopCor = row * 32
+                    brick.BotCor = row * 32 + 32
+
+                    niz.append(brick)
+
+                elif (j == 2):
+                    eagle = Eagle("Image/eagle")
+                    eagle.setPos(col * 32, row * 32)
+                    self.addItem(eagle)
+                    self.update()
+                    eagle.LeftCor = col * 32
+                    eagle.RightCor = col * 32 + 96
+                    eagle.TopCor = row * 32
+                    eagle.BotCor = row * 32 + 64
+
+                    niz.append(eagle)
+
+                col = col + 1
+            row = row + 1
+
+        self.player1.setPos((SCREEN_WIDTH - self.player1.pixmap().width()) / 5,
+                            (SCREEN_HEIGHT - self.player1.pixmap().height()) / 1)
+
+        self.player2.setPos((SCREEN_WIDTH - self.player2.pixmap().width()) / 3 * 2,
+                            (SCREEN_HEIGHT - self.player2.pixmap().height()) / 1)
+
+        self.bullet.setPos(-1, -1)
+        self.addItem(self.bullet)
+
+        self.bullet2.setPos(-1, -1)
+        self.addItem(self.bullet2)
+
+        """"""
+
+        self.addItem(self.player1)
+        self.addItem(self.player2)
+
+        # Stat label
+        """self.label = QGraphicsRectItem()
+        self.label.setRect(992, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
+        self.label.setBrush(QBrush(Qt.gray))
+        self.addItem(self.label)
+
+        # Stats
+        self.p1 = QGraphicsPixmapItem()"""
+        self.p1.setPos(1020, 50)
+        self.p1.setPixmap(QPixmap("Image/P1"))
+        self.addItem(self.p1)
+        #self.player1Lifes = QGraphicsPixmapItem()
+        self.player1Lifes.setPos(1070, 50)
+        if self.player1.lifes == 3:
+            self.player1Lifes.setPixmap(QPixmap("Image/3lifes"))
+        elif self.player1.lifes == 2:
+            self.player1Lifes.setPixmap(QPixmap("Image/2lifes"))
+        elif self.player1.lifes == 1:
+            self.player1Lifes.setPixmap(QPixmap("Image/1lif"))
+        self.addItem(self.player1Lifes)
+
+        #self.p2 = QGraphicsPixmapItem()
+        self.p2.setPos(1020, 150)
+        self.p2.setPixmap(QPixmap("Image/P2"))
+        self.addItem(self.p2)
+        #self.player2Lifes = QGraphicsPixmapItem()
+        self.player2Lifes.setPos(1070, 150)
+        if self.player2.lifes == 3:
+            self.player2Lifes.setPixmap(QPixmap("Image/3lifes"))
+        elif self.player2.lifes == 2:
+            self.player2Lifes.setPixmap(QPixmap("Image/2lifes"))
+        elif self.player2.lifes == 1:
+            self.player2Lifes.setPixmap(QPixmap("Image/1lif"))
+        self.addItem(self.player2Lifes)
+
+        #self.levelFlag = QGraphicsPixmapItem()
+        self.levelFlag.setPos(1020, 750)
+        self.levelFlag.setPixmap(QPixmap("Image/levelFlag"))
+        self.addItem(self.levelFlag)
+
+        #self.levelNumberFont = QFont()
+        self.levelNumberFont.setPixelSize(25)
+        self.levelNumberFont.setBold(1)
+        #self.levelNumber = QGraphicsSimpleTextItem()
+        self.levelNumber.setText(str(self.level))
+        self.levelNumber.setPos(1060, 755)
+        self.levelNumber.setBrush(QBrush(Qt.black))
+        self.levelNumber.setFont(self.levelNumberFont)
+        self.addItem(self.levelNumber)
+
+        #self.player1ScoreFont = QFont()
+        self.player1ScoreFont.setPixelSize(35)
+        self.player1ScoreFont.setBold(1)
+        #self.player1ScoreLabel = QGraphicsSimpleTextItem()
+        self.player1ScoreLabel.setText("P1 : " + str(self.player1.score))
+        self.player1ScoreLabel.setPos(1020, 230)
+        self.player1ScoreLabel.setBrush(QBrush(Qt.black))
+        self.player1ScoreLabel.setFont(self.player1ScoreFont)
+        self.addItem(self.player1ScoreLabel)
+
+        #self.player2ScoreFont = QFont()
+        self.player2ScoreFont.setPixelSize(35)
+        self.player2ScoreFont.setBold(1)
+        #self.player2ScoreLabel = QGraphicsSimpleTextItem()
+        self.player2ScoreLabel.setText("P2 : " + str(self.player2.score))
+        self.player2ScoreLabel.setPos(1020, 290)
+        self.player2ScoreLabel.setBrush(QBrush(Qt.black))
+        self.player2ScoreLabel.setFont(self.player2ScoreFont)
+        self.addItem(self.player2ScoreLabel)
+
+        """self.enemyNumberPic = QGraphicsPixmapItem()
+        self.enemyNumberPic.setPos(1020, 400)
+        self.enemyNumberPic.setPixmap(QPixmap("Image/enemyTankTop"))
+        self.addItem(self.enemyNumberPic)"""
+
+        """"""
+        # Timer for enemy bullet
+
+        """self.timerEnemy = QTimer()
+        self.timerEnemy.timeout.connect(self.enemyBulletTemp)
+        self.timerEnemy.start(ENEMY_BULLET_TIMER)"""
+        """"""
+
+        self.enemyNumber = 6
+
+        # self.thread = QThread()
+        # self.moveToThread(self.thread)
+        for i in range(0, 6):
+            self.createEnemy()
+            # self.thread.started.connect(self.createEnemy)
+        # self.thread.start()
+
+        #self.timer = QBasicTimer()
+        self.timer.start(FRAME_TIME_MS, self)
+
+        # PowerUp
+        #self.powerUpQTimer = QTimer()
+        self.powerUpQTimer.timeout.connect(self.powerUpScene)
+        self.powerUpQTimer.start(randint(9000, 10000))
+
+        self.powerUpImage = QGraphicsPixmapItem()
+        self.powerUpName = ""
+
+        _thread.start_new_thread(self.enemyNumberCalculate, ())
 
     def gameOver(self):
         self.timer.stop()

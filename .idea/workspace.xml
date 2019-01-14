@@ -16,8 +16,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Projekat/BattleCity.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="137">
-              <caret line="807" column="28" lean-forward="true" selection-start-line="807" selection-start-column="28" selection-end-line="807" selection-end-column="28" />
+            <state relative-caret-position="254">
+              <caret line="772" column="57" lean-forward="true" selection-start-line="772" selection-start-column="57" selection-end-line="772" selection-end-column="57" />
               <folding>
                 <element signature="e#1#11#0" expanded="true" />
                 <element signature="e#1817#13016#0" />
@@ -93,6 +93,11 @@
       <find>ENEMY_NUMBER</find>
       <find>enemyNumberCalculate</find>
       <find>print</find>
+      <find>newle</find>
+      <find>-1</find>
+      <find>niz</find>
+      <find>maps</find>
+      <find>player1.score)</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -109,7 +114,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="260" />
     <option name="y" value="20" />
     <option name="width" value="1400" />
@@ -212,7 +217,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1066" extended-state="7" />
+    <frame x="-8" y="-8" width="1936" height="1066" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.18018967" />
@@ -249,8 +254,8 @@
     <entry file="file://C:/Program Files/Python36/Lib/multiprocessing/pool.py" />
     <entry file="file://$PROJECT_DIR$/Projekat/BattleCity.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="137">
-          <caret line="807" column="28" lean-forward="true" selection-start-line="807" selection-start-column="28" selection-end-line="807" selection-end-column="28" />
+        <state relative-caret-position="254">
+          <caret line="772" column="57" lean-forward="true" selection-start-line="772" selection-start-column="57" selection-end-line="772" selection-end-column="57" />
           <folding>
             <element signature="e#1#11#0" expanded="true" />
             <element signature="e#1817#13016#0" />
