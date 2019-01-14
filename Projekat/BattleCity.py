@@ -60,7 +60,7 @@ FRAME_TIME_MS           = 16  # ms/frame
 #ENEMY_BULLET_TIMER      = 25000
 MIN_ENEMY_BULLET_TIMER  = 3000
 MAX_ENEMY_BULLET_TIMER  = 6000
-ENEMY_NUMBER = 6
+ENEMY_NUMBER = 8
 playerPositions = [(0,0),(0,0)]
 enemyPositions = [(0,0)]
 
@@ -818,7 +818,11 @@ class Scene(QGraphicsScene):
         self.powerUpImage = QGraphicsPixmapItem()
         self.powerUpName = ""
 
+        self.threadFinished = False
         _thread.start_new_thread(self.enemyNumberCalculate, ())
+        while not self.threadFinished:
+            continue
+        self.threadFinished = False
         #self.enemyNumberCalculate()
 
         self.view = QGraphicsView(self)
@@ -848,21 +852,13 @@ class Scene(QGraphicsScene):
                 self.enemyNumberPic = QGraphicsPixmapItem()
                 self.enemyNumberPic.setPos(1020+(j*37), x)
                 self.enemyNumberPic.setPixmap(QPixmap("Image/enemyTank32"))
-                self.addItem(self.enemyNumberPic)
                 self.temp.append(self.enemyNumberPic)
+                self.addItem(self.temp[j+i*4])
+
                 z = z - 1
 
-        a = z
-        if (ENEMY_NUMBER > 24):
-            for i in range(0,a):
-                self.enemyNumberPic = QGraphicsPixmapItem()
-                self.enemyNumberPic.setPos(-50,-50)
-                self.enemyNumberPic.setPixmap(QPixmap("Image/enemyTank32"))
-                self.addItem(self.enemyNumberPic)
-                self.temp.append(self.enemyNumberPic)
-
         print(str(len(self.temp)))
-
+        self.threadFinished = True
 
     #@pyqtSlot()
     def createEnemy(self):
@@ -1065,9 +1061,9 @@ class Scene(QGraphicsScene):
                 if(self.enemyCount > 0):
                     self.createEnemy()
                     self.enemyCount = self.enemyCount - 1
-                    #if(self.enemyCount <= 24):
-                        #self.removeItem(self.temp[-1])
-                    self.temp.remove(self.temp[-1])
+                    if(self.enemyCount <= 24):
+                        self.removeItem(self.temp[-1])
+                        self.temp.remove(self.temp[-1])
                     print("Ispis  unutar pucanja" + str(len(self.temp)))
 
 
@@ -1121,9 +1117,8 @@ class Scene(QGraphicsScene):
                 if (self.enemyCount > 0):
                     self.createEnemy()
                     self.enemyCount = self.enemyCount - 1
-                    if (self.enemyCount <= 24 and len(self.temp) > 1):
+                    if (self.enemyCount <= 24):
                         self.removeItem(self.temp[-1])
-                    if(len(self.temp) > 1):
                         self.temp.remove(self.temp[-1])
 
 
@@ -1162,12 +1157,12 @@ class Scene(QGraphicsScene):
         print("DJOKARA FUKSA GLUPAVA")
 
         #OVO PROMENITI NA FAXU OBAVEZNO
-        """pool = multiprocessing.Pool(processes=1)
+        pool = multiprocessing.Pool(processes=1)
         result = pool.apply_async(powerUp, (910, SCREEN_HEIGHT - 50))
-        self.cords = result.get(timeout=1)
-        pool.close()"""
+        self.cords = result.get(timeout=0.1)
+        pool.close()
 
-        self.cords = [randint(0,910), randint(0,SCREEN_HEIGHT - 50), randint(0,1)]
+        #self.cords = [randint(0,910), randint(0,SCREEN_HEIGHT - 50), randint(0,1)]
 
         self.powerUpImage.setPos(self.cords[0], self.cords[1])
         #print(str(self.powerUpTimer))
@@ -1186,8 +1181,8 @@ class Scene(QGraphicsScene):
 
         # PowerUp
         # self.powerUpQTimer = QTimer()
-        self.powerUpQTimer.timeout.connect(self.powerUpScene)
-        self.powerUpQTimer.start(randint(9000, 10000))
+        #self.powerUpQTimer.timeout.connect(self.powerUpScene)
+        self.powerUpQTimer.start(5000)
         print("NOVI LEVEL")
 
         global ENEMY_SPEED
@@ -1289,7 +1284,7 @@ class Scene(QGraphicsScene):
         elif self.player1.lifes == 2:
             self.player1Lifes.setPixmap(QPixmap("Image/2lifes"))
         elif self.player1.lifes == 1:
-            self.player1Lifes.setPixmap(QPixmap("Image/1lif"))
+            self.player1Lifes.setPixmap(QPixmap("Image/1life"))
         self.addItem(self.player1Lifes)
 
         #self.p2 = QGraphicsPixmapItem()
@@ -1303,7 +1298,7 @@ class Scene(QGraphicsScene):
         elif self.player2.lifes == 2:
             self.player2Lifes.setPixmap(QPixmap("Image/2lifes"))
         elif self.player2.lifes == 1:
-            self.player2Lifes.setPixmap(QPixmap("Image/1lif"))
+            self.player2Lifes.setPixmap(QPixmap("Image/1life"))
         self.addItem(self.player2Lifes)
 
         #self.levelFlag = QGraphicsPixmapItem()
@@ -1368,7 +1363,12 @@ class Scene(QGraphicsScene):
         self.powerUpImage = QGraphicsPixmapItem()
         self.powerUpName = ""
 
+        #self.enemyNumberCalculate()
+        self.threadFinished = False
         _thread.start_new_thread(self.enemyNumberCalculate, ())
+        while not self.threadFinished:
+            continue
+        self.threadFinished = False
 
     def gameOver(self):
         self.timer.stop()
